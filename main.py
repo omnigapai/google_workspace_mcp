@@ -13,6 +13,9 @@ from core.server import server, set_transport_mode, configure_server_for_http
 from core.tool_tier_loader import resolve_tools_from_tier
 from core.tool_registry import set_enabled_tools as set_enabled_tool_names, wrap_server_tool_method, filter_server_tools
 
+# Import Paestro endpoints for frontend compatibility
+import paestro_endpoints
+
 dotenv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env')
 load_dotenv(dotenv_path=dotenv_path)
 
