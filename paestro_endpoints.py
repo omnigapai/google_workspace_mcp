@@ -10,7 +10,6 @@ from fastapi.responses import JSONResponse
 
 from core.server import server
 from auth.credential_store import get_credential_store
-from auth.google_auth import revoke_user_credentials
 
 logger = logging.getLogger(__name__)
 
@@ -101,7 +100,7 @@ async def disconnect_oauth(coach_id: str) -> JSONResponse:
     try:
         user_email = get_user_email_from_coach_id(coach_id)
         
-        # Revoke credentials and remove from store
+        # Remove credentials from store
         revoke_success = credential_store.delete_credential(user_email)
         
         if revoke_success:
