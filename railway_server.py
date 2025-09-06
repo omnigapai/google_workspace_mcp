@@ -52,7 +52,8 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path.startswith('/google/oauth-url'):
             # Generate OAuth URL for frontend
             coach_id = 'default'  # Could extract from query params if needed
-            oauth_url = f"https://accounts.google.com/o/oauth2/auth?client_id=YOUR_CLIENT_ID&redirect_uri=https://googleworkspacemcp-production-6c89.up.railway.app/oauth2callback&scope=https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/contacts&response_type=code&state={coach_id}"
+            client_id = os.environ.get('GOOGLE_OAUTH_CLIENT_ID', 'YOUR_CLIENT_ID')
+            oauth_url = f"https://accounts.google.com/o/oauth2/auth?client_id={client_id}&redirect_uri=https://googleworkspacemcp-production-6c89.up.railway.app/oauth2callback&scope=https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/contacts&response_type=code&state={coach_id}"
             
             self.send_json_response({
                 "oauth_url": oauth_url,
