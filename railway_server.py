@@ -49,6 +49,16 @@ class Handler(BaseHTTPRequestHandler):
                 "error": "Coach not authenticated - OAuth required",
                 "coach_id": coach_id
             }, status_code=401)
+        elif self.path.startswith('/google/oauth-url'):
+            # Generate OAuth URL for frontend
+            coach_id = 'default'  # Could extract from query params if needed
+            oauth_url = f"https://accounts.google.com/o/oauth2/auth?client_id=YOUR_CLIENT_ID&redirect_uri=https://googleworkspacemcp-production-6c89.up.railway.app/oauth2callback&scope=https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/contacts&response_type=code&state={coach_id}"
+            
+            self.send_json_response({
+                "oauth_url": oauth_url,
+                "coach_id": coach_id,
+                "status": "success"
+            })
         elif self.path.startswith('/oauth2callback'):
             # Parse query parameters
             query_params = {}
