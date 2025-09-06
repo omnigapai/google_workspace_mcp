@@ -40,5 +40,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
 ENV TOOL_TIER=""
 ENV TOOLS=""
 
-# Use uvicorn directly
-CMD ["uv", "run", "uvicorn", "http_server:app", "--host", "0.0.0.0", "--port", "${PORT:-8000}"]
+# Use uvicorn directly with shell for PORT variable expansion
+CMD sh -c "uv run uvicorn http_server:app --host 0.0.0.0 --port ${PORT:-8000}"
