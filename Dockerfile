@@ -42,4 +42,4 @@ ENV TOOLS=""
 
 # Use entrypoint for the base command and CMD for args
 ENTRYPOINT ["/bin/sh", "-c"]
-CMD ["uv run uvicorn fastmcp_server:mcp --host 0.0.0.0 --port ${PORT:-8000}"]
+CMD ["uv run main.py --transport streamable-http"]
