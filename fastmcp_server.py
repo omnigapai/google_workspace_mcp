@@ -25,6 +25,9 @@ from auth.oauth_common_handlers import (
     handle_oauth_client_config,
     handle_oauth_register,
 )
+
+# Import Paestro-specific endpoints for frontend compatibility
+import paestro_endpoints
 from fastapi.responses import JSONResponse
 from starlette.requests import Request
 
