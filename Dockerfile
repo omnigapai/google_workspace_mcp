@@ -41,4 +41,4 @@ ENV TOOL_TIER=""
 ENV TOOLS=""
 
 # Use uvicorn directly with shell for PORT variable expansion
-CMD sh -c "uv run uvicorn http_server:app --host 0.0.0.0 --port ${PORT:-8000}"
+CMD sh -c "uv run uvicorn http_server_minimal:app --host 0.0.0.0 --port ${PORT:-8000}"
