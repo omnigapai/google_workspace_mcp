@@ -40,6 +40,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
 ENV TOOL_TIER=""
 ENV TOOLS=""
 
-# Use entrypoint for the base command and CMD for args
-ENTRYPOINT ["/bin/sh", "-c"]
-CMD ["uv run http_server.py"]
+# Use uvicorn directly
+CMD ["uv", "run", "uvicorn", "http_server:app", "--host", "0.0.0.0", "--port", "${PORT:-8000}"]
