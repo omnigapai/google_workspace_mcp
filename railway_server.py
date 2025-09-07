@@ -331,7 +331,18 @@ class Handler(BaseHTTPRequestHandler):
                 query_string = self.path.split('?')[1]
                 query_params = urllib.parse.parse_qs(query_string)
             
-            coach_id = query_params.get('coach_id', ['default'])[0]
+            coach_id = query_params.get('coach_id', [None])[0]
+            
+            # Validate coach_id is provided
+            if not coach_id or coach_id == 'default':
+                self.send_json_response({
+                    "error": "Missing coach_id parameter",
+                    "message": "Please include coach_id as a query parameter: /google/oauth-url?coach_id=YOUR_COACH_ID",
+                    "status": "error",
+                    "example": "/google/oauth-url?coach_id=bralin-jackson-coach-id"
+                }, status_code=400)
+                return
+            
             client_id = os.environ.get('GOOGLE_OAUTH_CLIENT_ID', 'YOUR_CLIENT_ID')
             oauth_url = f"https://accounts.google.com/o/oauth2/auth?client_id={client_id}&redirect_uri=http://localhost:8080/oauth-callback&scope=https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/contacts.readonly&response_type=code&state={coach_id}&prompt=consent&access_type=offline"
             
@@ -500,6 +511,8 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.send_header('Cross-Origin-Opener-Policy', 'same-origin-allow-popups')
+        self.send_header('Cross-Origin-Embedder-Policy', 'unsafe-none')
         self.end_headers()
     
     def send_json_response(self, data, status_code=200):
@@ -508,6 +521,8 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.send_header('Cross-Origin-Opener-Policy', 'same-origin-allow-popups')
+        self.send_header('Cross-Origin-Embedder-Policy', 'unsafe-none')
         self.end_headers()
         self.wfile.write(json.dumps(data).encode())
     
