@@ -7,17 +7,30 @@ Testing Railway deployment without credential store initialization.
 import os
 import logging
 from typing import Optional, Dict, Any
-from fastapi import FastAPI, HTTPException, Header
+from fastapi import FastAPI, HTTPException, Header, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 import uvicorn
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Custom middleware to add COOP and COEP headers for OAuth popup support
+class OAuthHeadersMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        # Add OAuth-friendly headers to allow popup communication
+        response.headers["Cross-Origin-Opener-Policy"] = "unsafe-none"
+        response.headers["Cross-Origin-Embedder-Policy"] = "unsafe-none"
+        return response
+
 # Create FastAPI app
 app = FastAPI(title="Google Workspace MCP", version="1.0.0")
+
+# Add OAuth headers middleware (must be added before CORS)
+app.add_middleware(OAuthHeadersMiddleware)
 
 # Configure CORS
 app.add_middleware(

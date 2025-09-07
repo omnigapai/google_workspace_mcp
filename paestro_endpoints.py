@@ -10,18 +10,20 @@ from fastapi.responses import JSONResponse
 
 from core.server import server
 from auth.credential_store import get_credential_store
+from auth.oauth21_session_store import get_oauth21_session_store
 
 logger = logging.getLogger(__name__)
 
-# Initialize credential store
+# Initialize credential store and OAuth21 session store
 credential_store = get_credential_store()
+oauth21_store = get_oauth21_session_store()
 
 
 def get_user_email_from_coach_id(coach_id: str) -> str:
     """
     Convert coach ID to user email for credential lookup.
-    For now, we"ll assume the coach_id IS the email or derive it.
-    In production, this would lookup the coach"s email from your user database.
+    For now, we'll assume the coach_id IS the email or derive it.
+    In production, this would lookup the coach's email from your user database.
     """
     # Temporary: assume coach_id is email format or derive email
     if "@" in coach_id:
@@ -45,8 +47,12 @@ async def get_oauth_status(coach_id: str) -> JSONResponse:
     try:
         user_email = get_user_email_from_coach_id(coach_id)
         
-        # Check if credentials exist and are valid
-        credentials = credential_store.get_credential(user_email)
+        # First, try OAuth21SessionStore (primary storage)
+        credentials = oauth21_store.get_credentials(user_email)
+        
+        # Fallback to credential store (file-based storage)
+        if not credentials:
+            credentials = credential_store.get_credential(user_email)
         
         if credentials and credentials.valid:
             # Get user info if available
@@ -61,7 +67,8 @@ async def get_oauth_status(coach_id: str) -> JSONResponse:
                 "scopes": getattr(credentials, "scopes", []),
                 "last_sync": credentials.expiry.isoformat() if credentials.expiry else None,
                 "mode": "production",
-                "message": "Google OAuth connected and active"
+                "message": "Google OAuth connected and active",
+                "storage": "oauth21" if oauth21_store.has_session(user_email) else "file"
             })
         else:
             return JSONResponse({
@@ -71,7 +78,8 @@ async def get_oauth_status(coach_id: str) -> JSONResponse:
                 "last_sync": None,
                 "scopes": [],
                 "mode": "production", 
-                "message": "Google OAuth not connected - authorization required"
+                "message": "No OAuth token found - please connect Google Workspace",
+                "storage": "supabase"
             })
             
     except Exception as e:
