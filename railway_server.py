@@ -385,6 +385,7 @@ class Handler(BaseHTTPRequestHandler):
                 code = data.get('code')
                 coach_id = data.get('coachId')
                 coach_email = data.get('coachEmail')
+                redirect_uri = data.get('redirectUri', 'http://localhost:8080/oauth-callback')
                 
                 if not code or not coach_id:
                     self.send_json_response({
@@ -396,13 +397,14 @@ class Handler(BaseHTTPRequestHandler):
                 # Exchange authorization code for tokens with Google
                 print(f"🔄 OAuth token exchange for coach {coach_id} ({coach_email})")
                 print(f"📝 Authorization code received: {code[:20]}...")
+                print(f"🔗 Redirect URI: {redirect_uri}")
                 
                 # Real token exchange with Google OAuth
                 token_data = {
                     'code': code,
                     'client_id': os.environ.get('GOOGLE_OAUTH_CLIENT_ID'),
                     'client_secret': os.environ.get('GOOGLE_OAUTH_CLIENT_SECRET'),
-                    'redirect_uri': 'http://localhost:8080/oauth-callback',
+                    'redirect_uri': redirect_uri,
                     'grant_type': 'authorization_code'
                 }
                 
