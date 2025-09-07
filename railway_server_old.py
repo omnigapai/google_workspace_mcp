@@ -180,7 +180,13 @@ class Handler(BaseHTTPRequestHandler):
                 }, status_code=500)
         elif self.path.startswith('/google/oauth-url'):
             # Generate OAuth URL for frontend
-            coach_id = 'default'  # Could extract from query params if needed
+            # Extract coach_id from query params
+            query_params = {}
+            if '?' in self.path:
+                query_string = self.path.split('?')[1]
+                query_params = urllib.parse.parse_qs(query_string)
+            
+            coach_id = query_params.get('coach_id', ['default'])[0]
             client_id = os.environ.get('GOOGLE_OAUTH_CLIENT_ID', 'YOUR_CLIENT_ID')
             oauth_url = f"https://accounts.google.com/o/oauth2/auth?client_id={client_id}&redirect_uri=http://localhost:8080/oauth-callback&scope=https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/contacts.readonly&response_type=code&state={coach_id}&prompt=consent&access_type=offline"
             
