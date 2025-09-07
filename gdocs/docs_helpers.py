@@ -33,24 +33,24 @@ def build_text_style(
     fields = []
     
     if bold is not None:
-        text_style['bold'] = bold
-        fields.append('bold')
+        text_style["bold"] = bold
+        fields.append("bold")
     
     if italic is not None:
-        text_style['italic'] = italic
-        fields.append('italic')
+        text_style["italic"] = italic
+        fields.append("italic")
     
     if underline is not None:
-        text_style['underline'] = underline
-        fields.append('underline')
+        text_style["underline"] = underline
+        fields.append("underline")
     
     if font_size is not None:
-        text_style['fontSize'] = {'magnitude': font_size, 'unit': 'PT'}
-        fields.append('fontSize')
+        text_style["fontSize"] = {"magnitude": font_size, "unit": "PT"}
+        fields.append("fontSize")
     
     if font_family is not None:
-        text_style['weightedFontFamily'] = {'fontFamily': font_family}
-        fields.append('weightedFontFamily')
+        text_style["weightedFontFamily"] = {"fontFamily": font_family}
+        fields.append("weightedFontFamily")
     
     return text_style, fields
 
@@ -66,9 +66,9 @@ def create_insert_text_request(index: int, text: str) -> Dict[str, Any]:
         Dictionary representing the insertText request
     """
     return {
-        'insertText': {
-            'location': {'index': index},
-            'text': text
+        "insertText": {
+            "location": {"index": index},
+            "text": text
         }
     }
 
@@ -85,12 +85,12 @@ def create_insert_text_segment_request(index: int, text: str, segment_id: str) -
         Dictionary representing the insertText request with segmentId
     """
     return {
-        'insertText': {
-            'location': {
-                'segmentId': segment_id,
-                'index': index
+        "insertText": {
+            "location": {
+                "segmentId": segment_id,
+                "index": index
             },
-            'text': text
+            "text": text
         }
     }
 
@@ -106,10 +106,10 @@ def create_delete_range_request(start_index: int, end_index: int) -> Dict[str, A
         Dictionary representing the deleteContentRange request
     """
     return {
-        'deleteContentRange': {
-            'range': {
-                'startIndex': start_index,
-                'endIndex': end_index
+        "deleteContentRange": {
+            "range": {
+                "startIndex": start_index,
+                "endIndex": end_index
             }
         }
     }
@@ -144,13 +144,13 @@ def create_format_text_request(
         return None
     
     return {
-        'updateTextStyle': {
-            'range': {
-                'startIndex': start_index,
-                'endIndex': end_index
+        "updateTextStyle": {
+            "range": {
+                "startIndex": start_index,
+                "endIndex": end_index
             },
-            'textStyle': text_style,
-            'fields': ','.join(fields)
+            "textStyle": text_style,
+            "fields": ",".join(fields)
         }
     }
 
@@ -171,12 +171,12 @@ def create_find_replace_request(
         Dictionary representing the replaceAllText request
     """
     return {
-        'replaceAllText': {
-            'containsText': {
-                'text': find_text,
-                'matchCase': match_case
+        "replaceAllText": {
+            "containsText": {
+                "text": find_text,
+                "matchCase": match_case
             },
-            'replaceText': replace_text
+            "replaceText": replace_text
         }
     }
 
@@ -193,10 +193,10 @@ def create_insert_table_request(index: int, rows: int, columns: int) -> Dict[str
         Dictionary representing the insertTable request
     """
     return {
-        'insertTable': {
-            'location': {'index': index},
-            'rows': rows,
-            'columns': columns
+        "insertTable": {
+            "location": {"index": index},
+            "rows": rows,
+            "columns": columns
         }
     }
 
@@ -211,8 +211,8 @@ def create_insert_page_break_request(index: int) -> Dict[str, Any]:
         Dictionary representing the insertPageBreak request
     """
     return {
-        'insertPageBreak': {
-            'location': {'index': index}
+        "insertPageBreak": {
+            "location": {"index": index}
         }
     }
 
@@ -235,21 +235,21 @@ def create_insert_image_request(
         Dictionary representing the insertInlineImage request
     """
     request = {
-        'insertInlineImage': {
-            'location': {'index': index},
-            'uri': image_uri
+        "insertInlineImage": {
+            "location": {"index": index},
+            "uri": image_uri
         }
     }
     
     # Add size properties if specified
     object_size = {}
     if width is not None:
-        object_size['width'] = {'magnitude': width, 'unit': 'PT'}
+        object_size["width"] = {"magnitude": width, "unit": "PT"}
     if height is not None:
-        object_size['height'] = {'magnitude': height, 'unit': 'PT'}
+        object_size["height"] = {"magnitude": height, "unit": "PT"}
     
     if object_size:
-        request['insertInlineImage']['objectSize'] = object_size
+        request["insertInlineImage"]["objectSize"] = object_size
     
     return request
 
@@ -270,18 +270,18 @@ def create_bullet_list_request(
         Dictionary representing the createParagraphBullets request
     """
     bullet_preset = (
-        'BULLET_DISC_CIRCLE_SQUARE' 
+        "BULLET_DISC_CIRCLE_SQUARE" 
         if list_type == "UNORDERED" 
-        else 'NUMBERED_DECIMAL_ALPHA_ROMAN'
+        else "NUMBERED_DECIMAL_ALPHA_ROMAN"
     )
     
     return {
-        'createParagraphBullets': {
-            'range': {
-                'startIndex': start_index,
-                'endIndex': end_index
+        "createParagraphBullets": {
+            "range": {
+                "startIndex": start_index,
+                "endIndex": end_index
             },
-            'bulletPreset': bullet_preset
+            "bulletPreset": bullet_preset
         }
     }
 
@@ -295,23 +295,23 @@ def validate_operation(operation: Dict[str, Any]) -> Tuple[bool, str]:
     Returns:
         Tuple of (is_valid, error_message)
     """
-    op_type = operation.get('type')
+    op_type = operation.get("type")
     if not op_type:
-        return False, "Missing 'type' field"
+        return False, "Missing "type" field"
     
     # Validate required fields for each operation type
     required_fields = {
-        'insert_text': ['index', 'text'],
-        'delete_text': ['start_index', 'end_index'],
-        'replace_text': ['start_index', 'end_index', 'text'],
-        'format_text': ['start_index', 'end_index'],
-        'insert_table': ['index', 'rows', 'columns'],
-        'insert_page_break': ['index'],
-        'find_replace': ['find_text', 'replace_text']
+        "insert_text": ["index", "text"],
+        "delete_text": ["start_index", "end_index"],
+        "replace_text": ["start_index", "end_index", "text"],
+        "format_text": ["start_index", "end_index"],
+        "insert_table": ["index", "rows", "columns"],
+        "insert_page_break": ["index"],
+        "find_replace": ["find_text", "replace_text"]
     }
     
     if op_type not in required_fields:
-        return False, f"Unsupported operation type: {op_type or 'None'}"
+        return False, f"Unsupported operation type: {op_type or "None"}"
     
     for field in required_fields[op_type]:
         if field not in operation:

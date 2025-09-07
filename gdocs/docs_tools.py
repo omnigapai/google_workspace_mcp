@@ -62,25 +62,25 @@ async def search_docs(
     Returns:
         str: A formatted list of Google Docs matching the search query.
     """
-    logger.info(f"[search_docs] Email={user_google_email}, Query='{query}'")
+    logger.info(f"[search_docs] Email={user_google_email}, Query="{query}"")
 
-    escaped_query = query.replace("'", "\\'")
+    escaped_query = query.replace(""", "\\"")
 
     response = await asyncio.to_thread(
         service.files().list(
-            q=f"name contains '{escaped_query}' and mimeType='application/vnd.google-apps.document' and trashed=false",
+            q=f"name contains "{escaped_query}" and mimeType="application/vnd.google-apps.document" and trashed=false",
             pageSize=page_size,
             fields="files(id, name, createdTime, modifiedTime, webViewLink)"
         ).execute
     )
-    files = response.get('files', [])
+    files = response.get("files", [])
     if not files:
-        return f"No Google Docs found matching '{query}'."
+        return f"No Google Docs found matching "{query}"."
 
-    output = [f"Found {len(files)} Google Docs matching '{query}':"]
+    output = [f"Found {len(files)} Google Docs matching "{query}":"]
     for f in files:
         output.append(
-            f"- {f['name']} (ID: {f['id']}) Modified: {f.get('modifiedTime')} Link: {f.get('webViewLink')}"
+            f"- {f["name"]} (ID: {f["id"]}) Modified: {f.get("modifiedTime")} Link: {f.get("webViewLink")}"
         )
     return "\n".join(output)
 
@@ -104,7 +104,7 @@ async def get_doc_content(
     Returns:
         str: The document content with metadata header.
     """
-    logger.info(f"[get_doc_content] Invoked. Document/File ID: '{document_id}' for user '{user_google_email}'")
+    logger.info(f"[get_doc_content] Invoked. Document/File ID: "{document_id}" for user "{user_google_email}"")
 
     # Step 2: Get file metadata from Drive
     file_metadata = await asyncio.to_thread(
@@ -116,7 +116,7 @@ async def get_doc_content(
     file_name = file_metadata.get("name", "Unknown File")
     web_view_link = file_metadata.get("webViewLink", "#")
 
-    logger.info(f"[get_doc_content] File '{file_name}' (ID: {document_id}) has mimeType: '{mime_type}'")
+    logger.info(f"[get_doc_content] File "{file_name}" (ID: {document_id}) has mimeType: "{mime_type}"")
 
     body_text = "" # Initialize body_text
 
@@ -142,24 +142,24 @@ async def get_doc_content(
                 text_lines.append(TAB_HEADER_FORMAT.format(tab_name=tab_name))
 
             for element in elements:
-                if 'paragraph' in element:
-                    paragraph = element.get('paragraph', {})
-                    para_elements = paragraph.get('elements', [])
+                if "paragraph" in element:
+                    paragraph = element.get("paragraph", {})
+                    para_elements = paragraph.get("elements", [])
                     current_line_text = ""
                     for pe in para_elements:
-                        text_run = pe.get('textRun', {})
-                        if text_run and 'content' in text_run:
-                            current_line_text += text_run['content']
+                        text_run = pe.get("textRun", {})
+                        if text_run and "content" in text_run:
+                            current_line_text += text_run["content"]
                     if current_line_text.strip():
                         text_lines.append(current_line_text)
-                elif 'table' in element:
+                elif "table" in element:
                     # Handle table content
-                    table = element.get('table', {})
-                    table_rows = table.get('tableRows', [])
+                    table = element.get("table", {})
+                    table_rows = table.get("tableRows", [])
                     for row in table_rows:
-                        row_cells = row.get('tableCells', [])
+                        row_cells = row.get("tableCells", [])
                         for cell in row_cells:
-                            cell_content = cell.get('content', [])
+                            cell_content = cell.get("content", [])
                             cell_text = extract_text_from_elements(cell_content, depth=depth + 1)
                             if cell_text.strip():
                                 text_lines.append(cell_text)
@@ -169,16 +169,16 @@ async def get_doc_content(
             """Process a tab and its nested child tabs recursively"""
             tab_text = ""
 
-            if 'documentTab' in tab:
-                tab_title = tab.get('documentTab', {}).get('title', 'Untitled Tab')
+            if "documentTab" in tab:
+                tab_title = tab.get("documentTab", {}).get("title", "Untitled Tab")
                 # Add indentation for nested tabs to show hierarchy
                 if level > 0:
                     tab_title = "    " * level + tab_title
-                tab_body = tab.get('documentTab', {}).get('body', {}).get('content', [])
+                tab_body = tab.get("documentTab", {}).get("body", {}).get("content", [])
                 tab_text += extract_text_from_elements(tab_body, tab_title)
 
             # Process child tabs (nested tabs)
-            child_tabs = tab.get('childTabs', [])
+            child_tabs = tab.get("childTabs", [])
             for child_tab in child_tabs:
                 tab_text += process_tab_hierarchy(child_tab, level + 1)
 
@@ -187,13 +187,13 @@ async def get_doc_content(
         processed_text_lines = []
 
         # Process main document body
-        body_elements = doc_data.get('body', {}).get('content', [])
+        body_elements = doc_data.get("body", {}).get("content", [])
         main_content = extract_text_from_elements(body_elements)
         if main_content.strip():
             processed_text_lines.append(main_content)
 
         # Process all tabs
-        tabs = doc_data.get('tabs', [])
+        tabs = doc_data.get("tabs", [])
         for tab in tabs:
             tab_content = process_tab_hierarchy(tab)
             if tab_content.strip():
@@ -233,13 +233,13 @@ async def get_doc_content(
                 body_text = file_content_bytes.decode("utf-8")
             except UnicodeDecodeError:
                 body_text = (
-                    f"[Binary or unsupported text encoding for mimeType '{mime_type}' - "
+                    f"[Binary or unsupported text encoding for mimeType "{mime_type}" - "
                     f"{len(file_content_bytes)} bytes]"
                 )
 
     header = (
-        f'File: "{file_name}" (ID: {document_id}, Type: {mime_type})\n'
-        f'Link: {web_view_link}\n\n--- CONTENT ---\n'
+        f"File: "{file_name}" (ID: {document_id}, Type: {mime_type})\n"
+        f"Link: {web_view_link}\n\n--- CONTENT ---\n"
     )
     return header + body_text
 
@@ -249,7 +249,7 @@ async def get_doc_content(
 async def list_docs_in_folder(
     service,
     user_google_email: str,
-    folder_id: str = 'root',
+    folder_id: str = "root",
     page_size: int = 100
 ) -> str:
     """
@@ -258,21 +258,21 @@ async def list_docs_in_folder(
     Returns:
         str: A formatted list of Google Docs in the specified folder.
     """
-    logger.info(f"[list_docs_in_folder] Invoked. Email: '{user_google_email}', Folder ID: '{folder_id}'")
+    logger.info(f"[list_docs_in_folder] Invoked. Email: "{user_google_email}", Folder ID: "{folder_id}"")
 
     rsp = await asyncio.to_thread(
         service.files().list(
-            q=f"'{folder_id}' in parents and mimeType='application/vnd.google-apps.document' and trashed=false",
+            q=f""{folder_id}" in parents and mimeType="application/vnd.google-apps.document" and trashed=false",
             pageSize=page_size,
             fields="files(id, name, modifiedTime, webViewLink)"
         ).execute
     )
-    items = rsp.get('files', [])
+    items = rsp.get("files", [])
     if not items:
-        return f"No Google Docs found in folder '{folder_id}'."
-    out = [f"Found {len(items)} Docs in folder '{folder_id}':"]
+        return f"No Google Docs found in folder "{folder_id}"."
+    out = [f"Found {len(items)} Docs in folder "{folder_id}":"]
     for f in items:
-        out.append(f"- {f['name']} (ID: {f['id']}) Modified: {f.get('modifiedTime')} Link: {f.get('webViewLink')}")
+        out.append(f"- {f["name"]} (ID: {f["id"]}) Modified: {f.get("modifiedTime")} Link: {f.get("webViewLink")}")
     return "\n".join(out)
 
 @server.tool()
@@ -282,7 +282,7 @@ async def create_doc(
     service,
     user_google_email: str,
     title: str,
-    content: str = '',
+    content: str = "",
 ) -> str:
     """
     Creates a new Google Doc and optionally inserts initial content.
@@ -290,16 +290,16 @@ async def create_doc(
     Returns:
         str: Confirmation message with document ID and link.
     """
-    logger.info(f"[create_doc] Invoked. Email: '{user_google_email}', Title='{title}'")
+    logger.info(f"[create_doc] Invoked. Email: "{user_google_email}", Title="{title}"")
 
-    doc = await asyncio.to_thread(service.documents().create(body={'title': title}).execute)
-    doc_id = doc.get('documentId')
+    doc = await asyncio.to_thread(service.documents().create(body={"title": title}).execute)
+    doc_id = doc.get("documentId")
     if content:
-        requests = [{'insertText': {'location': {'index': 1}, 'text': content}}]
-        await asyncio.to_thread(service.documents().batchUpdate(documentId=doc_id, body={'requests': requests}).execute)
+        requests = [{"insertText": {"location": {"index": 1}, "text": content}}]
+        await asyncio.to_thread(service.documents().batchUpdate(documentId=doc_id, body={"requests": requests}).execute)
     link = f"https://docs.google.com/document/d/{doc_id}/edit"
-    msg = f"Created Google Doc '{title}' (ID: {doc_id}) for {user_google_email}. Link: {link}"
-    logger.info(f"Successfully created Google Doc '{title}' (ID: {doc_id}) for {user_google_email}. Link: {link}")
+    msg = f"Created Google Doc "{title}" (ID: {doc_id}) for {user_google_email}. Link: {link}"
+    logger.info(f"Successfully created Google Doc "{title}" (ID: {doc_id}) for {user_google_email}. Link: {link}")
     return msg
 
 
@@ -323,7 +323,7 @@ async def modify_doc_text(
     Modifies text in a Google Doc - can insert/replace text and/or apply formatting in a single operation.
 
     Args:
-        user_google_email: User's Google email address
+        user_google_email: User"s Google email address
         document_id: ID of the document to update
         start_index: Start position for operation (0-based)
         end_index: End position for text replacement/formatting (if not provided with text, text is inserted)
@@ -348,7 +348,7 @@ async def modify_doc_text(
 
     # Validate that we have something to do
     if text is None and not any([bold is not None, italic is not None, underline is not None, font_size, font_family]):
-        return "Error: Must provide either 'text' to insert/replace, or formatting parameters (bold, italic, underline, font_size, font_family)."
+        return "Error: Must provide either "text" to insert/replace, or formatting parameters (bold, italic, underline, font_size, font_family)."
 
     # Validate text formatting params if provided
     if any([bold is not None, italic is not None, underline is not None, font_size, font_family]):
@@ -358,7 +358,7 @@ async def modify_doc_text(
 
         # For formatting, we need end_index
         if end_index is None:
-            return "Error: 'end_index' is required when applying formatting."
+            return "Error: "end_index" is required when applying formatting."
 
         is_valid, error_msg = validator.validate_index_range(start_index, end_index)
         if not is_valid:
@@ -427,12 +427,12 @@ async def modify_doc_text(
         if font_family:
             format_details.append(f"font_family={font_family}")
 
-        operations.append(f"Applied formatting ({', '.join(format_details)}) to range {format_start}-{format_end}")
+        operations.append(f"Applied formatting ({", ".join(format_details)}) to range {format_start}-{format_end}")
 
     await asyncio.to_thread(
         service.documents().batchUpdate(
             documentId=document_id,
-            body={'requests': requests}
+            body={"requests": requests}
         ).execute
     )
 
@@ -456,7 +456,7 @@ async def find_and_replace_doc(
     Finds and replaces text throughout a Google Doc.
 
     Args:
-        user_google_email: User's Google email address
+        user_google_email: User"s Google email address
         document_id: ID of the document to update
         find_text: Text to search for
         replace_text: Text to replace with
@@ -465,26 +465,26 @@ async def find_and_replace_doc(
     Returns:
         str: Confirmation message with replacement count
     """
-    logger.info(f"[find_and_replace_doc] Doc={document_id}, find='{find_text}', replace='{replace_text}'")
+    logger.info(f"[find_and_replace_doc] Doc={document_id}, find="{find_text}", replace="{replace_text}"")
 
     requests = [create_find_replace_request(find_text, replace_text, match_case)]
 
     result = await asyncio.to_thread(
         service.documents().batchUpdate(
             documentId=document_id,
-            body={'requests': requests}
+            body={"requests": requests}
         ).execute
     )
 
     # Extract number of replacements from response
     replacements = 0
-    if 'replies' in result and result['replies']:
-        reply = result['replies'][0]
-        if 'replaceAllText' in reply:
-            replacements = reply['replaceAllText'].get('occurrencesChanged', 0)
+    if "replies" in result and result["replies"]:
+        reply = result["replies"][0]
+        if "replaceAllText" in reply:
+            replacements = reply["replaceAllText"].get("occurrencesChanged", 0)
 
     link = f"https://docs.google.com/document/d/{document_id}/edit"
-    return f"Replaced {replacements} occurrence(s) of '{find_text}' with '{replace_text}' in document {document_id}. Link: {link}"
+    return f"Replaced {replacements} occurrence(s) of "{find_text}" with "{replace_text}" in document {document_id}. Link: {link}"
 
 
 @server.tool()
@@ -505,7 +505,7 @@ async def insert_doc_elements(
     Inserts structural elements like tables, lists, or page breaks into a Google Doc.
 
     Args:
-        user_google_email: User's Google email address
+        user_google_email: User"s Google email address
         document_id: ID of the document to update
         element_type: Type of element to insert ("table", "list", "page_break")
         index: Position to insert element (0-based)
@@ -519,7 +519,7 @@ async def insert_doc_elements(
     """
     logger.info(f"[insert_doc_elements] Doc={document_id}, type={element_type}, index={index}")
 
-    # Handle the special case where we can't insert at the first section break
+    # Handle the special case where we can"t insert at the first section break
     # If index is 0, bump it to 1 to avoid the section break
     if index == 0:
         logger.debug("Adjusting index from 0 to 1 to avoid first section break")
@@ -529,21 +529,21 @@ async def insert_doc_elements(
 
     if element_type == "table":
         if not rows or not columns:
-            return "Error: 'rows' and 'columns' parameters are required for table insertion."
+            return "Error: "rows" and "columns" parameters are required for table insertion."
 
         requests.append(create_insert_table_request(index, rows, columns))
         description = f"table ({rows}x{columns})"
 
     elif element_type == "list":
         if not list_type:
-            return "Error: 'list_type' parameter is required for list insertion ('UNORDERED' or 'ORDERED')."
+            return "Error: "list_type" parameter is required for list insertion ("UNORDERED" or "ORDERED")."
 
         if not text:
             text = "List item"
 
         # Insert text first, then create list
         requests.extend([
-            create_insert_text_request(index, text + '\n'),
+            create_insert_text_request(index, text + "\n"),
             create_bullet_list_request(index, index + len(text), list_type)
         ])
         description = f"{list_type.lower()} list"
@@ -553,12 +553,12 @@ async def insert_doc_elements(
         description = "page break"
 
     else:
-        return f"Error: Unsupported element type '{element_type}'. Supported types: 'table', 'list', 'page_break'."
+        return f"Error: Unsupported element type "{element_type}". Supported types: "table", "list", "page_break"."
 
     await asyncio.to_thread(
         service.documents().batchUpdate(
             documentId=document_id,
-            body={'requests': requests}
+            body={"requests": requests}
         ).execute
     )
 
@@ -585,7 +585,7 @@ async def insert_doc_image(
     Inserts an image into a Google Doc from Drive or a URL.
 
     Args:
-        user_google_email: User's Google email address
+        user_google_email: User"s Google email address
         document_id: ID of the document to update
         image_source: Drive file ID or public image URL
         index: Position to insert image (0-based)
@@ -597,14 +597,14 @@ async def insert_doc_image(
     """
     logger.info(f"[insert_doc_image] Doc={document_id}, source={image_source}, index={index}")
 
-    # Handle the special case where we can't insert at the first section break
+    # Handle the special case where we can"t insert at the first section break
     # If index is 0, bump it to 1 to avoid the section break
     if index == 0:
         logger.debug("Adjusting index from 0 to 1 to avoid first section break")
         index = 1
 
     # Determine if source is a Drive file ID or URL
-    is_drive_file = not (image_source.startswith('http://') or image_source.startswith('https://'))
+    is_drive_file = not (image_source.startswith("http://") or image_source.startswith("https://"))
 
     if is_drive_file:
         # Verify Drive file exists and get metadata
@@ -615,12 +615,12 @@ async def insert_doc_image(
                     fields="id, name, mimeType"
                 ).execute
             )
-            mime_type = file_metadata.get('mimeType', '')
-            if not mime_type.startswith('image/'):
+            mime_type = file_metadata.get("mimeType", "")
+            if not mime_type.startswith("image/"):
                 return f"Error: File {image_source} is not an image (MIME type: {mime_type})."
 
             image_uri = f"https://drive.google.com/uc?id={image_source}"
-            source_description = f"Drive file {file_metadata.get('name', image_source)}"
+            source_description = f"Drive file {file_metadata.get("name", image_source)}"
         except Exception as e:
             return f"Error: Could not access Drive file {image_source}: {str(e)}"
     else:
@@ -633,13 +633,13 @@ async def insert_doc_image(
     await asyncio.to_thread(
         docs_service.documents().batchUpdate(
             documentId=document_id,
-            body={'requests': requests}
+            body={"requests": requests}
         ).execute
     )
 
     size_info = ""
     if width or height:
-        size_info = f" (size: {width or 'auto'}x{height or 'auto'} points)"
+        size_info = f" (size: {width or "auto"}x{height or "auto"} points)"
 
     link = f"https://docs.google.com/document/d/{document_id}/edit"
     return f"Inserted {source_description}{size_info} at index {index} in document {document_id}. Link: {link}"
@@ -659,7 +659,7 @@ async def update_doc_headers_footers(
     Updates headers or footers in a Google Doc.
 
     Args:
-        user_google_email: User's Google email address
+        user_google_email: User"s Google email address
         document_id: ID of the document to update
         section_type: Type of section to update ("header" or "footer")
         content: Text content for the header/footer
@@ -711,10 +711,10 @@ async def batch_update_doc(
     Executes multiple document operations in a single atomic batch update.
 
     Args:
-        user_google_email: User's Google email address
+        user_google_email: User"s Google email address
         document_id: ID of the document to update
         operations: List of operation dictionaries. Each operation should contain:
-                   - type: Operation type ('insert_text', 'delete_text', 'replace_text', 'format_text', 'insert_table', 'insert_page_break')
+                   - type: Operation type ("insert_text", "delete_text", "replace_text", "format_text", "insert_table", "insert_page_break")
                    - Additional parameters specific to each operation type
 
     Example operations:
@@ -749,7 +749,7 @@ async def batch_update_doc(
 
     if success:
         link = f"https://docs.google.com/document/d/{document_id}/edit"
-        replies_count = metadata.get('replies_count', 0)
+        replies_count = metadata.get("replies_count", 0)
         return f"{message} on document {document_id}. API replies: {replies_count}. Link: {link}"
     else:
         return f"Error: {message}"
@@ -788,7 +788,7 @@ async def inspect_doc_structure(
     Step 4: Create your table
 
     Args:
-        user_google_email: User's Google email address
+        user_google_email: User"s Google email address
         document_id: ID of the document to inspect
         detailed: Whether to return detailed structure information
 
@@ -808,45 +808,45 @@ async def inspect_doc_structure(
 
         # Simplify for JSON serialization
         result = {
-            'title': structure['title'],
-            'total_length': structure['total_length'],
-            'statistics': {
-                'elements': len(structure['body']),
-                'tables': len(structure['tables']),
-                'paragraphs': sum(1 for e in structure['body'] if e.get('type') == 'paragraph'),
-                'has_headers': bool(structure['headers']),
-                'has_footers': bool(structure['footers'])
+            "title": structure["title"],
+            "total_length": structure["total_length"],
+            "statistics": {
+                "elements": len(structure["body"]),
+                "tables": len(structure["tables"]),
+                "paragraphs": sum(1 for e in structure["body"] if e.get("type") == "paragraph"),
+                "has_headers": bool(structure["headers"]),
+                "has_footers": bool(structure["footers"])
             },
-            'elements': []
+            "elements": []
         }
 
         # Add element summaries
-        for element in structure['body']:
+        for element in structure["body"]:
             elem_summary = {
-                'type': element['type'],
-                'start_index': element['start_index'],
-                'end_index': element['end_index']
+                "type": element["type"],
+                "start_index": element["start_index"],
+                "end_index": element["end_index"]
             }
 
-            if element['type'] == 'table':
-                elem_summary['rows'] = element['rows']
-                elem_summary['columns'] = element['columns']
-                elem_summary['cell_count'] = len(element.get('cells', []))
-            elif element['type'] == 'paragraph':
-                elem_summary['text_preview'] = element.get('text', '')[:100]
+            if element["type"] == "table":
+                elem_summary["rows"] = element["rows"]
+                elem_summary["columns"] = element["columns"]
+                elem_summary["cell_count"] = len(element.get("cells", []))
+            elif element["type"] == "paragraph":
+                elem_summary["text_preview"] = element.get("text", "")[:100]
 
-            result['elements'].append(elem_summary)
+            result["elements"].append(elem_summary)
 
         # Add table details
-        if structure['tables']:
-            result['tables'] = []
-            for i, table in enumerate(structure['tables']):
+        if structure["tables"]:
+            result["tables"] = []
+            for i, table in enumerate(structure["tables"]):
                 table_data = extract_table_as_data(table)
-                result['tables'].append({
-                    'index': i,
-                    'position': {'start': table['start_index'], 'end': table['end_index']},
-                    'dimensions': {'rows': table['rows'], 'columns': table['columns']},
-                    'preview': table_data[:3] if table_data else []  # First 3 rows
+                result["tables"].append({
+                    "index": i,
+                    "position": {"start": table["start_index"], "end": table["end_index"]},
+                    "dimensions": {"rows": table["rows"], "columns": table["columns"]},
+                    "preview": table_data[:3] if table_data else []  # First 3 rows
                 })
 
     else:
@@ -856,14 +856,14 @@ async def inspect_doc_structure(
         # Add table information
         tables = find_tables(doc)
         if tables:
-            result['table_details'] = []
+            result["table_details"] = []
             for i, table in enumerate(tables):
-                result['table_details'].append({
-                    'index': i,
-                    'rows': table['rows'],
-                    'columns': table['columns'],
-                    'start_index': table['start_index'],
-                    'end_index': table['end_index']
+                result["table_details"].append({
+                    "index": i,
+                    "rows": table["rows"],
+                    "columns": table["columns"],
+                    "start_index": table["start_index"],
+                    "end_index": table["end_index"]
                 })
 
     import json
@@ -889,7 +889,7 @@ async def create_table_with_data(
     MANDATORY WORKFLOW - DO THESE STEPS IN ORDER:
 
     Step 1: ALWAYS call inspect_doc_structure first
-    Step 2: Use the 'total_length' value from inspect_doc_structure as your index
+    Step 2: Use the "total_length" value from inspect_doc_structure as your index
     Step 3: Format data as 2D list: [["col1", "col2"], ["row1col1", "row1col2"]]
     Step 4: Call this function with the correct index and data
 
@@ -902,7 +902,7 @@ async def create_table_with_data(
 
     CRITICAL INDEX REQUIREMENTS:
     - NEVER use index values like 1, 2, 10 without calling inspect_doc_structure first
-    - ALWAYS get index from inspect_doc_structure 'total_length' field
+    - ALWAYS get index from inspect_doc_structure "total_length" field
     - Index must be a valid insertion point in the document
 
     DATA FORMAT REQUIREMENTS:
@@ -913,10 +913,10 @@ async def create_table_with_data(
     - Use debug_table_structure after creation to verify results
 
     Args:
-        user_google_email: User's Google email address
+        user_google_email: User"s Google email address
         document_id: ID of the document to update
         table_data: 2D list of strings - EXACT format: [["col1", "col2"], ["row1col1", "row1col2"]]
-        index: Document position (MANDATORY: get from inspect_doc_structure 'total_length')
+        index: Document position (MANDATORY: get from inspect_doc_structure "total_length")
         bold_headers: Whether to make first row bold (default: true)
 
     Returns:
@@ -956,8 +956,8 @@ async def create_table_with_data(
 
     if success:
         link = f"https://docs.google.com/document/d/{document_id}/edit"
-        rows = metadata.get('rows', 0)
-        columns = metadata.get('columns', 0)
+        rows = metadata.get("rows", 0)
+        columns = metadata.get("columns", 0)
 
         return f"SUCCESS: {message}. Table: {rows}x{columns}, Index: {index}. Link: {link}"
     else:
@@ -974,7 +974,7 @@ async def debug_table_structure(
     table_index: int = 0,
 ) -> str:
     """
-    ESSENTIAL DEBUGGING TOOL - Use this whenever tables don't work as expected.
+    ESSENTIAL DEBUGGING TOOL - Use this whenever tables don"t work as expected.
 
     USE THIS IMMEDIATELY WHEN:
     - Table population put data in wrong cells
@@ -985,7 +985,7 @@ async def debug_table_structure(
 
     WHAT THIS SHOWS YOU:
     - Exact table dimensions (rows × columns)
-    - Each cell's position coordinates (row,col)
+    - Each cell"s position coordinates (row,col)
     - Current content in each cell
     - Insertion indices for each cell
     - Table boundaries and ranges
@@ -993,7 +993,7 @@ async def debug_table_structure(
     HOW TO READ THE OUTPUT:
     - "dimensions": "2x3" = 2 rows, 3 columns
     - "position": "(0,0)" = first row, first column
-    - "current_content": What's actually in each cell right now
+    - "current_content": What"s actually in each cell right now
     - "insertion_index": Where new text would be inserted in that cell
 
     WORKFLOW INTEGRATION:
@@ -1003,7 +1003,7 @@ async def debug_table_structure(
     4. When debugging → Compare your data array to actual table structure
 
     Args:
-        user_google_email: User's Google email address
+        user_google_email: User"s Google email address
         document_id: ID of the document to inspect
         table_index: Which table to debug (0 = first table, 1 = second table, etc.)
 
@@ -1028,24 +1028,24 @@ async def debug_table_structure(
 
     # Extract detailed cell information
     debug_info = {
-        'table_index': table_index,
-        'dimensions': f"{table_info['rows']}x{table_info['columns']}",
-        'table_range': f"[{table_info['start_index']}-{table_info['end_index']}]",
-        'cells': []
+        "table_index": table_index,
+        "dimensions": f"{table_info["rows"]}x{table_info["columns"]}",
+        "table_range": f"[{table_info["start_index"]}-{table_info["end_index"]}]",
+        "cells": []
     }
 
-    for row_idx, row in enumerate(table_info['cells']):
+    for row_idx, row in enumerate(table_info["cells"]):
         row_info = []
         for col_idx, cell in enumerate(row):
             cell_debug = {
-                'position': f"({row_idx},{col_idx})",
-                'range': f"[{cell['start_index']}-{cell['end_index']}]",
-                'insertion_index': cell.get('insertion_index', 'N/A'),
-                'current_content': repr(cell.get('content', '')),
-                'content_elements_count': len(cell.get('content_elements', []))
+                "position": f"({row_idx},{col_idx})",
+                "range": f"[{cell["start_index"]}-{cell["end_index"]}]",
+                "insertion_index": cell.get("insertion_index", "N/A"),
+                "current_content": repr(cell.get("content", "")),
+                "content_elements_count": len(cell.get("content_elements", []))
             }
             row_info.append(cell_debug)
-        debug_info['cells'].append(row_info)
+        debug_info["cells"].append(row_info)
 
     link = f"https://docs.google.com/document/d/{document_id}/edit"
     return f"Table structure debug for table {table_index}:\n\n{json.dumps(debug_info, indent=2)}\n\nLink: {link}"
@@ -1064,7 +1064,7 @@ async def export_doc_to_pdf(
     Exports a Google Doc to PDF format and saves it to Google Drive.
 
     Args:
-        user_google_email: User's Google email address
+        user_google_email: User"s Google email address
         document_id: ID of the Google Doc to export
         pdf_filename: Name for the PDF file (optional - if not provided, uses original name + "_PDF")
         folder_id: Drive folder ID to save PDF in (optional - if not provided, saves in root)
@@ -1074,7 +1074,7 @@ async def export_doc_to_pdf(
     """
     logger.info(f"[export_doc_to_pdf] Email={user_google_email}, Doc={document_id}, pdf_filename={pdf_filename}, folder_id={folder_id}")
 
-    # Get file metadata first to validate it's a Google Doc
+    # Get file metadata first to validate it"s a Google Doc
     try:
         file_metadata = await asyncio.to_thread(
             service.files().get(
@@ -1089,17 +1089,17 @@ async def export_doc_to_pdf(
     original_name = file_metadata.get("name", "Unknown Document")
     web_view_link = file_metadata.get("webViewLink", "#")
 
-    # Verify it's a Google Doc
+    # Verify it"s a Google Doc
     if mime_type != "application/vnd.google-apps.document":
-        return f"Error: File '{original_name}' is not a Google Doc (MIME type: {mime_type}). Only native Google Docs can be exported to PDF."
+        return f"Error: File "{original_name}" is not a Google Doc (MIME type: {mime_type}). Only native Google Docs can be exported to PDF."
 
-    logger.info(f"[export_doc_to_pdf] Exporting '{original_name}' to PDF")
+    logger.info(f"[export_doc_to_pdf] Exporting "{original_name}" to PDF")
 
     # Export the document as PDF
     try:
         request_obj = service.files().export_media(
             fileId=document_id,
-            mimeType='application/pdf'
+            mimeType="application/pdf"
         )
         
         fh = io.BytesIO()
@@ -1118,8 +1118,8 @@ async def export_doc_to_pdf(
     # Determine PDF filename
     if not pdf_filename:
         pdf_filename = f"{original_name}_PDF.pdf"
-    elif not pdf_filename.endswith('.pdf'):
-        pdf_filename += '.pdf'
+    elif not pdf_filename.endswith(".pdf"):
+        pdf_filename += ".pdf"
 
     # Upload PDF to Drive
     try:
@@ -1128,33 +1128,33 @@ async def export_doc_to_pdf(
         # Create media upload object
         media = MediaIoBaseUpload(
             fh,
-            mimetype='application/pdf',
+            mimetype="application/pdf",
             resumable=True
         )
         
         # Prepare file metadata for upload
         file_metadata = {
-            'name': pdf_filename,
-            'mimeType': 'application/pdf'
+            "name": pdf_filename,
+            "mimeType": "application/pdf"
         }
         
         # Add parent folder if specified
         if folder_id:
-            file_metadata['parents'] = [folder_id]
+            file_metadata["parents"] = [folder_id]
         
         # Upload the file
         uploaded_file = await asyncio.to_thread(
             service.files().create(
                 body=file_metadata,
                 media_body=media,
-                fields='id, name, webViewLink, parents',
+                fields="id, name, webViewLink, parents",
                 supportsAllDrives=True
             ).execute
         )
         
-        pdf_file_id = uploaded_file.get('id')
-        pdf_web_link = uploaded_file.get('webViewLink', '#')
-        pdf_parents = uploaded_file.get('parents', [])
+        pdf_file_id = uploaded_file.get("id")
+        pdf_web_link = uploaded_file.get("webViewLink", "#")
+        pdf_parents = uploaded_file.get("parents", [])
         
         logger.info(f"[export_doc_to_pdf] Successfully uploaded PDF to Drive: {pdf_file_id}")
         
@@ -1164,7 +1164,7 @@ async def export_doc_to_pdf(
         elif pdf_parents:
             folder_info = f" in folder {pdf_parents[0]}"
         
-        return f"Successfully exported '{original_name}' to PDF and saved to Drive as '{pdf_filename}' (ID: {pdf_file_id}, {pdf_size:,} bytes){folder_info}. PDF: {pdf_web_link} | Original: {web_view_link}"
+        return f"Successfully exported "{original_name}" to PDF and saved to Drive as "{pdf_filename}" (ID: {pdf_file_id}, {pdf_size:,} bytes){folder_info}. PDF: {pdf_web_link} | Original: {web_view_link}"
         
     except Exception as e:
         return f"Error: Failed to upload PDF to Drive: {str(e)}. PDF was generated successfully ({pdf_size:,} bytes) but could not be saved to Drive."
@@ -1174,7 +1174,7 @@ async def export_doc_to_pdf(
 _comment_tools = create_comment_tools("document", "document_id")
 
 # Extract and register the functions
-read_doc_comments = _comment_tools['read_comments']
-create_doc_comment = _comment_tools['create_comment']
-reply_to_comment = _comment_tools['reply_to_comment']
-resolve_comment = _comment_tools['resolve_comment']
+read_doc_comments = _comment_tools["read_comments"]
+create_doc_comment = _comment_tools["create_comment"]
+reply_to_comment = _comment_tools["reply_to_comment"]
+resolve_comment = _comment_tools["resolve_comment"]

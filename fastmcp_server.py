@@ -32,11 +32,11 @@ from fastapi.responses import JSONResponse
 from starlette.requests import Request
 
 # Load environment variables
-dotenv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env')
+dotenv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
 load_dotenv(dotenv_path=dotenv_path)
 
 # Suppress googleapiclient discovery cache warning
-logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
+logging.getLogger("googleapiclient.discovery_cache").setLevel(logging.ERROR)
 
 # Reload OAuth configuration after env vars loaded
 reload_oauth_config()
@@ -44,7 +44,7 @@ reload_oauth_config()
 # Configure basic logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -61,13 +61,13 @@ def configure_safe_logging():
             except UnicodeEncodeError:
                 # Fallback to ASCII-safe formatting
                 service_prefix = self._get_ascii_prefix(record.name, record.levelname)
-                safe_msg = str(record.getMessage()).encode('ascii', errors='replace').decode('ascii')
+                safe_msg = str(record.getMessage()).encode("ascii", errors="replace").decode("ascii")
                 return f"{service_prefix} {safe_msg}"
 
-    # Replace all console handlers' formatters with safe enhanced ones
+    # Replace all console handlers" formatters with safe enhanced ones
     for handler in logging.root.handlers:
         # Only apply to console/stream handlers, keep file handlers as-is
-        if isinstance(handler, logging.StreamHandler) and handler.stream.name in ['<stderr>', '<stdout>']:
+        if isinstance(handler, logging.StreamHandler) and handler.stream.name in ["<stderr>", "<stdout>"]:
             safe_formatter = SafeEnhancedFormatter(use_colors=True)
             handler.setFormatter(safe_formatter)
 
@@ -88,7 +88,7 @@ else:
     logger.info("🔍 Skipping credentials directory check (stateless mode)")
 
 # Set transport mode for HTTP (FastMCP CLI defaults to streamable-http)
-set_transport_mode('streamable-http')
+set_transport_mode("streamable-http")
 configure_server_for_http()
 
 # Import all tool modules to register their @server.tool() decorators
@@ -107,9 +107,9 @@ import gsearch.search_tools
 wrap_server_tool_method(server)
 
 # Enable all tools and services by default
-all_services = ['gmail', 'drive', 'calendar', 'docs', 'sheets', 'chat', 'forms', 'slides', 'tasks', 'search']
+all_services = ["gmail", "drive", "calendar", "docs", "sheets", "chat", "forms", "slides", "tasks", "search"]
 set_enabled_tools(all_services)  # Set enabled services for scopes
-set_enabled_tool_names(None)  # Don't filter individual tools - enable all
+set_enabled_tool_names(None)  # Don"t filter individual tools - enable all
 
 # Filter tools based on configuration
 filter_server_tools(server)
@@ -139,6 +139,6 @@ async def oauth_token(request: Request):
 async def oauth_register(request: Request):
     return await handle_oauth_register(request)
 
-# Export server instance for FastMCP CLI (looks for 'mcp', 'server', or 'app')
+# Export server instance for FastMCP CLI (looks for "mcp", "server", or "app")
 mcp = server
 app = server

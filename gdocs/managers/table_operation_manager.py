@@ -80,10 +80,10 @@ class TableOperationManager:
             )
             
             metadata = {
-                'rows': rows,
-                'columns': cols,
-                'populated_cells': population_count,
-                'table_index': len(fresh_tables) - 1
+                "rows": rows,
+                "columns": cols,
+                "populated_cells": population_count,
+                "table_index": len(fresh_tables) - 1
             }
             
             return True, f"Successfully created {rows}x{cols} table and populated {population_count} cells", metadata
@@ -105,7 +105,7 @@ class TableOperationManager:
         await asyncio.to_thread(
             self.service.documents().batchUpdate(
                 documentId=document_id,
-                body={'requests': [create_insert_table_request(index, rows, cols)]}
+                body={"requests": [create_insert_table_request(index, rows, cols)]}
             ).execute
         )
         
@@ -174,7 +174,7 @@ class TableOperationManager:
                 return False
                 
             table = tables[-1]  # Use the last table (newly created one)
-            cells = table.get('cells', [])
+            cells = table.get("cells", [])
             
             # Bounds checking
             if row_idx >= len(cells) or col_idx >= len(cells[row_idx]):
@@ -182,7 +182,7 @@ class TableOperationManager:
                 return False
                 
             cell = cells[row_idx][col_idx]
-            insertion_index = cell.get('insertion_index')
+            insertion_index = cell.get("insertion_index")
             
             if not insertion_index:
                 logger.warning(f"No insertion_index for cell ({row_idx},{col_idx})")
@@ -192,10 +192,10 @@ class TableOperationManager:
             await asyncio.to_thread(
                 self.service.documents().batchUpdate(
                     documentId=document_id,
-                    body={'requests': [{
-                        'insertText': {
-                            'location': {'index': insertion_index},
-                            'text': cell_text
+                    body={"requests": [{
+                        "insertText": {
+                            "location": {"index": insertion_index},
+                            "text": cell_text
                         }
                     }]}
                 ).execute
@@ -223,14 +223,14 @@ class TableOperationManager:
         await asyncio.to_thread(
             self.service.documents().batchUpdate(
                 documentId=document_id,
-                body={'requests': [{
-                    'updateTextStyle': {
-                        'range': {
-                            'startIndex': start_index,
-                            'endIndex': end_index
+                body={"requests": [{
+                    "updateTextStyle": {
+                        "range": {
+                            "startIndex": start_index,
+                            "endIndex": end_index
                         },
-                        'textStyle': {'bold': True},
-                        'fields': 'bold'
+                        "textStyle": {"bold": True},
+                        "fields": "bold"
                     }
                 }]}
             ).execute
@@ -263,8 +263,8 @@ class TableOperationManager:
             table_info = tables[table_index]
             
             # Validate dimensions
-            table_rows = table_info['rows']
-            table_cols = table_info['columns']
+            table_rows = table_info["rows"]
+            table_cols = table_info["columns"]
             data_rows = len(table_data)
             data_cols = len(table_data[0]) if table_data else 0
             
@@ -277,10 +277,10 @@ class TableOperationManager:
             )
             
             metadata = {
-                'table_index': table_index,
-                'populated_cells': population_count,
-                'table_dimensions': f"{table_rows}x{table_cols}",
-                'data_dimensions': f"{data_rows}x{data_cols}"
+                "table_index": table_index,
+                "populated_cells": population_count,
+                "table_dimensions": f"{table_rows}x{table_cols}",
+                "data_dimensions": f"{data_rows}x{data_cols}"
             }
             
             return True, f"Successfully populated {population_count} cells in existing table", metadata
@@ -308,7 +308,7 @@ class TableOperationManager:
                     break
                     
                 table = tables[table_index]
-                cells = table.get('cells', [])
+                cells = table.get("cells", [])
                 
                 if row_idx >= len(cells) or col_idx >= len(cells[row_idx]):
                     continue
@@ -316,16 +316,16 @@ class TableOperationManager:
                 cell = cells[row_idx][col_idx]
                 
                 # For existing tables, append to existing content
-                cell_end = cell['end_index'] - 1  # Don't include cell end marker
+                cell_end = cell["end_index"] - 1  # Don"t include cell end marker
                 
                 try:
                     await asyncio.to_thread(
                         self.service.documents().batchUpdate(
                             documentId=document_id,
-                            body={'requests': [{
-                                'insertText': {
-                                    'location': {'index': cell_end},
-                                    'text': cell_text
+                            body={"requests": [{
+                                "insertText": {
+                                    "location": {"index": cell_end},
+                                    "text": cell_text
                                 }
                             }]}
                         ).execute

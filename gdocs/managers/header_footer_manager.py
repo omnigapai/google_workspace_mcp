@@ -55,11 +55,11 @@ class HeaderFooterManager:
         
         # Validate section type
         if section_type not in ["header", "footer"]:
-            return False, "section_type must be 'header' or 'footer'"
+            return False, "section_type must be "header" or "footer""
             
         # Validate header/footer type
         if header_footer_type not in ["DEFAULT", "FIRST_PAGE_ONLY", "EVEN_PAGE"]:
-            return False, "header_footer_type must be 'DEFAULT', 'FIRST_PAGE_ONLY', or 'EVEN_PAGE'"
+            return False, "header_footer_type must be "DEFAULT", "FIRST_PAGE_ONLY", or "EVEN_PAGE""
         
         try:
             # Get document structure
@@ -109,9 +109,9 @@ class HeaderFooterManager:
             Tuple of (section_data, section_id) or (None, None) if not found
         """
         if section_type == "header":
-            sections = doc.get('headers', {})
+            sections = doc.get("headers", {})
         else:
-            sections = doc.get('footers', {})
+            sections = doc.get("footers", {})
         
         # Try to match section based on header_footer_type
         # Google Docs API typically uses section IDs that correspond to types
@@ -119,7 +119,7 @@ class HeaderFooterManager:
         # First, try to find an exact match based on common patterns
         for section_id, section_data in sections.items():
             # Check if section_data contains type information
-            if 'type' in section_data and section_data['type'] == header_footer_type:
+            if "type" in section_data and section_data["type"] == header_footer_type:
                 return section_data, section_id
         
         # If no exact match, try pattern matching on section ID
@@ -161,7 +161,7 @@ class HeaderFooterManager:
         Returns:
             True if successful, False otherwise
         """
-        content_elements = section.get('content', [])
+        content_elements = section.get("content", [])
         if not content_elements:
             return False
             
@@ -171,8 +171,8 @@ class HeaderFooterManager:
             return False
         
         # Calculate content range
-        start_index = first_para.get('startIndex', 0)
-        end_index = first_para.get('endIndex', 0)
+        start_index = first_para.get("startIndex", 0)
+        end_index = first_para.get("endIndex", 0)
         
         # Build requests to replace content
         requests = []
@@ -180,19 +180,19 @@ class HeaderFooterManager:
         # Delete existing content if any (preserve paragraph structure)
         if end_index > start_index:
             requests.append({
-                'deleteContentRange': {
-                    'range': {
-                        'startIndex': start_index,
-                        'endIndex': end_index - 1  # Keep the paragraph end marker
+                "deleteContentRange": {
+                    "range": {
+                        "startIndex": start_index,
+                        "endIndex": end_index - 1  # Keep the paragraph end marker
                     }
                 }
             })
         
         # Insert new content
         requests.append({
-            'insertText': {
-                'location': {'index': start_index},
-                'text': new_content
+            "insertText": {
+                "location": {"index": start_index},
+                "text": new_content
             }
         })
         
@@ -200,7 +200,7 @@ class HeaderFooterManager:
             await asyncio.to_thread(
                 self.service.documents().batchUpdate(
                     documentId=document_id,
-                    body={'requests': requests}
+                    body={"requests": requests}
                 ).execute
             )
             return True
@@ -212,7 +212,7 @@ class HeaderFooterManager:
     def _find_first_paragraph(self, content_elements: list[dict[str, Any]]) -> Optional[dict[str, Any]]:
         """Find the first paragraph element in content."""
         for element in content_elements:
-            if 'paragraph' in element:
+            if "paragraph" in element:
                 return element
         return None
     
@@ -233,42 +233,42 @@ class HeaderFooterManager:
             doc = await self._get_document(document_id)
             
             headers_info = {}
-            for header_id, header_data in doc.get('headers', {}).items():
+            for header_id, header_data in doc.get("headers", {}).items():
                 headers_info[header_id] = self._extract_section_info(header_data)
             
             footers_info = {}
-            for footer_id, footer_data in doc.get('footers', {}).items():
+            for footer_id, footer_data in doc.get("footers", {}).items():
                 footers_info[footer_id] = self._extract_section_info(footer_data)
             
             return {
-                'headers': headers_info,
-                'footers': footers_info,
-                'has_headers': bool(headers_info),
-                'has_footers': bool(footers_info)
+                "headers": headers_info,
+                "footers": footers_info,
+                "has_headers": bool(headers_info),
+                "has_footers": bool(footers_info)
             }
             
         except Exception as e:
             logger.error(f"Failed to get header/footer info: {str(e)}")
-            return {'error': str(e)}
+            return {"error": str(e)}
     
     def _extract_section_info(self, section_data: dict[str, Any]) -> dict[str, Any]:
         """Extract useful information from a header/footer section."""
-        content_elements = section_data.get('content', [])
+        content_elements = section_data.get("content", [])
         
         # Extract text content
         text_content = ""
         for element in content_elements:
-            if 'paragraph' in element:
-                para = element['paragraph']
-                for para_element in para.get('elements', []):
-                    if 'textRun' in para_element:
-                        text_content += para_element['textRun'].get('content', '')
+            if "paragraph" in element:
+                para = element["paragraph"]
+                for para_element in para.get("elements", []):
+                    if "textRun" in para_element:
+                        text_content += para_element["textRun"].get("content", "")
         
         return {
-            'content_preview': text_content[:100] if text_content else "(empty)",
-            'element_count': len(content_elements),
-            'start_index': content_elements[0].get('startIndex', 0) if content_elements else 0,
-            'end_index': content_elements[-1].get('endIndex', 0) if content_elements else 0
+            "content_preview": text_content[:100] if text_content else "(empty)",
+            "element_count": len(content_elements),
+            "start_index": content_elements[0].get("startIndex", 0) if content_elements else 0,
+            "end_index": content_elements[-1].get("endIndex", 0) if content_elements else 0
         }
     
     async def create_header_footer(
@@ -289,7 +289,7 @@ class HeaderFooterManager:
             Tuple of (success, message)
         """
         if section_type not in ["header", "footer"]:
-            return False, "section_type must be 'header' or 'footer'"
+            return False, "section_type must be "header" or "footer""
         
         # Map our type names to API type names
         type_mapping = {
@@ -301,25 +301,25 @@ class HeaderFooterManager:
         
         api_type = type_mapping.get(header_footer_type, header_footer_type)
         if api_type not in ["DEFAULT", "FIRST_PAGE", "EVEN_PAGE"]:
-            return False, "header_footer_type must be 'DEFAULT', 'FIRST_PAGE', or 'EVEN_PAGE'"
+            return False, "header_footer_type must be "DEFAULT", "FIRST_PAGE", or "EVEN_PAGE""
         
         try:
             # Build the request
             request = {
-                'type': api_type
+                "type": api_type
             }
             
             # Create the appropriate request type
             if section_type == "header":
-                batch_request = {'createHeader': request}
+                batch_request = {"createHeader": request}
             else:
-                batch_request = {'createFooter': request}
+                batch_request = {"createFooter": request}
             
             # Execute the request
             await asyncio.to_thread(
                 self.service.documents().batchUpdate(
                     documentId=document_id,
-                    body={'requests': [batch_request]}
+                    body={"requests": [batch_request]}
                 ).execute
             )
             

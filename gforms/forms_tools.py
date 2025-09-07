@@ -30,7 +30,7 @@ async def create_form(
     Create a new form using the title given in the provided form message in the request.
 
     Args:
-        user_google_email (str): The user's Google email address. Required.
+        user_google_email (str): The user"s Google email address. Required.
         title (str): The title of the form.
         description (Optional[str]): The description of the form.
         document_title (Optional[str]): The document title (shown in browser tab).
@@ -38,7 +38,7 @@ async def create_form(
     Returns:
         str: Confirmation message with form ID and edit URL.
     """
-    logger.info(f"[create_form] Invoked. Email: '{user_google_email}', Title: {title}")
+    logger.info(f"[create_form] Invoked. Email: "{user_google_email}", Title: {title}")
 
     form_body: Dict[str, Any] = {
         "info": {
@@ -60,7 +60,7 @@ async def create_form(
     edit_url = f"https://docs.google.com/forms/d/{form_id}/edit"
     responder_url = created_form.get("responderUri", f"https://docs.google.com/forms/d/{form_id}/viewform")
 
-    confirmation_message = f"Successfully created form '{created_form.get('info', {}).get('title', title)}' for {user_google_email}. Form ID: {form_id}. Edit URL: {edit_url}. Responder URL: {responder_url}"
+    confirmation_message = f"Successfully created form "{created_form.get("info", {}).get("title", title)}" for {user_google_email}. Form ID: {form_id}. Edit URL: {edit_url}. Responder URL: {responder_url}"
     logger.info(f"Form created successfully for {user_google_email}. ID: {form_id}")
     return confirmation_message
 
@@ -77,13 +77,13 @@ async def get_form(
     Get a form.
 
     Args:
-        user_google_email (str): The user's Google email address. Required.
+        user_google_email (str): The user"s Google email address. Required.
         form_id (str): The ID of the form to retrieve.
 
     Returns:
         str: Form details including title, description, questions, and URLs.
     """
-    logger.info(f"[get_form] Invoked. Email: '{user_google_email}', Form ID: {form_id}")
+    logger.info(f"[get_form] Invoked. Email: "{user_google_email}", Form ID: {form_id}")
 
     form = await asyncio.to_thread(
         service.forms().get(formId=form_id).execute
@@ -135,7 +135,7 @@ async def set_publish_settings(
     Updates the publish settings of a form.
 
     Args:
-        user_google_email (str): The user's Google email address. Required.
+        user_google_email (str): The user"s Google email address. Required.
         form_id (str): The ID of the form to update publish settings for.
         publish_as_template (bool): Whether to publish as a template. Defaults to False.
         require_authentication (bool): Whether to require authentication to view/submit. Defaults to False.
@@ -143,7 +143,7 @@ async def set_publish_settings(
     Returns:
         str: Confirmation message of the successful publish settings update.
     """
-    logger.info(f"[set_publish_settings] Invoked. Email: '{user_google_email}', Form ID: {form_id}")
+    logger.info(f"[set_publish_settings] Invoked. Email: "{user_google_email}", Form ID: {form_id}")
 
     settings_body = {
         "publishAsTemplate": publish_as_template,
@@ -172,14 +172,14 @@ async def get_form_response(
     Get one response from the form.
 
     Args:
-        user_google_email (str): The user's Google email address. Required.
+        user_google_email (str): The user"s Google email address. Required.
         form_id (str): The ID of the form.
         response_id (str): The ID of the response to retrieve.
 
     Returns:
         str: Response details including answers and metadata.
     """
-    logger.info(f"[get_form_response] Invoked. Email: '{user_google_email}', Form ID: {form_id}, Response ID: {response_id}")
+    logger.info(f"[get_form_response] Invoked. Email: "{user_google_email}", Form ID: {form_id}, Response ID: {response_id}")
 
     response = await asyncio.to_thread(
         service.forms().responses().get(formId=form_id, responseId=response_id).execute
@@ -224,10 +224,10 @@ async def list_form_responses(
     page_token: Optional[str] = None
 ) -> str:
     """
-    List a form's responses.
+    List a form"s responses.
 
     Args:
-        user_google_email (str): The user's Google email address. Required.
+        user_google_email (str): The user"s Google email address. Required.
         form_id (str): The ID of the form.
         page_size (int): Maximum number of responses to return. Defaults to 10.
         page_token (Optional[str]): Token for retrieving next page of results.
@@ -235,7 +235,7 @@ async def list_form_responses(
     Returns:
         str: List of responses with basic details and pagination info.
     """
-    logger.info(f"[list_form_responses] Invoked. Email: '{user_google_email}', Form ID: {form_id}")
+    logger.info(f"[list_form_responses] Invoked. Email: "{user_google_email}", Form ID: {form_id}")
 
     params = {
         "formId": form_id,

@@ -20,8 +20,8 @@ credential_store = get_credential_store()
 def get_user_email_from_coach_id(coach_id: str) -> str:
     """
     Convert coach ID to user email for credential lookup.
-    For now, we'll assume the coach_id IS the email or derive it.
-    In production, this would lookup the coach's email from your user database.
+    For now, we"ll assume the coach_id IS the email or derive it.
+    In production, this would lookup the coach"s email from your user database.
     """
     # Temporary: assume coach_id is email format or derive email
     if "@" in coach_id:
@@ -50,15 +50,15 @@ async def get_oauth_status(coach_id: str) -> JSONResponse:
         
         if credentials and credentials.valid:
             # Get user info if available
-            user_info = getattr(credentials, 'id_token', {}) if hasattr(credentials, 'id_token') else {}
+            user_info = getattr(credentials, "id_token", {}) if hasattr(credentials, "id_token") else {}
             
             return JSONResponse({
                 "connected": True,
                 "needs_auth": False,
                 "coach_id": coach_id,
-                "email": user_info.get('email', user_email),
-                "name": user_info.get('name'),
-                "scopes": getattr(credentials, 'scopes', []),
+                "email": user_info.get("email", user_email),
+                "name": user_info.get("name"),
+                "scopes": getattr(credentials, "scopes", []),
                 "last_sync": credentials.expiry.isoformat() if credentials.expiry else None,
                 "mode": "production",
                 "message": "Google OAuth connected and active"

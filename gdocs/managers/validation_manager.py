@@ -26,15 +26,15 @@ class ValidationManager:
     def _setup_validation_rules(self) -> Dict[str, Any]:
         """Setup validation rules and constraints."""
         return {
-            'table_max_rows': 1000,
-            'table_max_columns': 20,
-            'document_id_pattern': r'^[a-zA-Z0-9-_]+$',
-            'max_text_length': 1000000,  # 1MB text limit
-            'font_size_range': (1, 400),  # Google Docs font size limits
-            'valid_header_footer_types': ["DEFAULT", "FIRST_PAGE_ONLY", "EVEN_PAGE"],
-            'valid_section_types': ["header", "footer"],
-            'valid_list_types': ["UNORDERED", "ORDERED"],
-            'valid_element_types': ["table", "list", "page_break"]
+            "table_max_rows": 1000,
+            "table_max_columns": 20,
+            "document_id_pattern": r"^[a-zA-Z0-9-_]+$",
+            "max_text_length": 1000000,  # 1MB text limit
+            "font_size_range": (1, 400),  # Google Docs font size limits
+            "valid_header_footer_types": ["DEFAULT", "FIRST_PAGE_ONLY", "EVEN_PAGE"],
+            "valid_section_types": ["header", "footer"],
+            "valid_list_types": ["UNORDERED", "ORDERED"],
+            "valid_element_types": ["table", "list", "page_break"]
         }
     
     def validate_document_id(self, document_id: str) -> Tuple[bool, str]:
@@ -72,15 +72,15 @@ class ValidationManager:
             Tuple of (is_valid, detailed_error_message)
         """
         if not table_data:
-            return False, "Table data cannot be empty. Required format: [['col1', 'col2'], ['row1col1', 'row1col2']]"
+            return False, "Table data cannot be empty. Required format: [["col1", "col2"], ["row1col1", "row1col2"]]"
         
         if not isinstance(table_data, list):
-            return False, f"Table data must be a list, got {type(table_data).__name__}. Required format: [['col1', 'col2'], ['row1col1', 'row1col2']]"
+            return False, f"Table data must be a list, got {type(table_data).__name__}. Required format: [["col1", "col2"], ["row1col1", "row1col2"]]"
         
-        # Check if it's a 2D list
+        # Check if it"s a 2D list
         if not all(isinstance(row, list) for row in table_data):
             non_list_rows = [i for i, row in enumerate(table_data) if not isinstance(row, list)]
-            return False, f"All rows must be lists. Rows {non_list_rows} are not lists. Required format: [['col1', 'col2'], ['row1col1', 'row1col2']]"
+            return False, f"All rows must be lists. Rows {non_list_rows} are not lists. Required format: [["col1", "col2"], ["row1col1", "row1col2"]]"
         
         # Check for empty rows
         if any(len(row) == 0 for row in table_data):
@@ -96,17 +96,17 @@ class ValidationManager:
         cols = col_counts[0]
         
         # Check dimension limits
-        if rows > self.validation_rules['table_max_rows']:
-            return False, f"Too many rows ({rows}). Maximum allowed: {self.validation_rules['table_max_rows']}"
+        if rows > self.validation_rules["table_max_rows"]:
+            return False, f"Too many rows ({rows}). Maximum allowed: {self.validation_rules["table_max_rows"]}"
         
-        if cols > self.validation_rules['table_max_columns']:
-            return False, f"Too many columns ({cols}). Maximum allowed: {self.validation_rules['table_max_columns']}"
+        if cols > self.validation_rules["table_max_columns"]:
+            return False, f"Too many columns ({cols}). Maximum allowed: {self.validation_rules["table_max_columns"]}"
         
         # Check cell content types
         for row_idx, row in enumerate(table_data):
             for col_idx, cell in enumerate(row):
                 if cell is None:
-                    return False, f"Cell ({row_idx},{col_idx}) is None. All cells must be strings, use empty string '' for empty cells."
+                    return False, f"Cell ({row_idx},{col_idx}) is None. All cells must be strings, use empty string "" for empty cells."
                 
                 if not isinstance(cell, str):
                     return False, f"Cell ({row_idx},{col_idx}) is {type(cell).__name__}, not string. All cells must be strings. Value: {repr(cell)}"
@@ -140,7 +140,7 @@ class ValidationManager:
             return False, "At least one formatting parameter must be provided (bold, italic, underline, font_size, or font_family)"
         
         # Validate boolean parameters
-        for param, name in [(bold, 'bold'), (italic, 'italic'), (underline, 'underline')]:
+        for param, name in [(bold, "bold"), (italic, "italic"), (underline, "underline")]:
             if param is not None and not isinstance(param, bool):
                 return False, f"{name} parameter must be boolean (True/False), got {type(param).__name__}"
         
@@ -149,7 +149,7 @@ class ValidationManager:
             if not isinstance(font_size, int):
                 return False, f"font_size must be an integer, got {type(font_size).__name__}"
             
-            min_size, max_size = self.validation_rules['font_size_range']
+            min_size, max_size = self.validation_rules["font_size_range"]
             if not (min_size <= font_size <= max_size):
                 return False, f"font_size must be between {min_size} and {max_size} points, got {font_size}"
         
@@ -242,9 +242,9 @@ class ValidationManager:
             Tuple of (is_valid, error_message)
         """
         # Validate element type
-        if element_type not in self.validation_rules['valid_element_types']:
-            valid_types = ', '.join(self.validation_rules['valid_element_types'])
-            return False, f"Invalid element_type '{element_type}'. Must be one of: {valid_types}"
+        if element_type not in self.validation_rules["valid_element_types"]:
+            valid_types = ", ".join(self.validation_rules["valid_element_types"])
+            return False, f"Invalid element_type "{element_type}". Must be one of: {valid_types}"
         
         # Validate index
         if not isinstance(index, int) or index < 0:
@@ -252,11 +252,11 @@ class ValidationManager:
         
         # Validate element-specific parameters
         if element_type == "table":
-            rows = kwargs.get('rows')
-            columns = kwargs.get('columns')
+            rows = kwargs.get("rows")
+            columns = kwargs.get("columns")
             
             if not rows or not columns:
-                return False, "Table insertion requires 'rows' and 'columns' parameters"
+                return False, "Table insertion requires "rows" and "columns" parameters"
             
             if not isinstance(rows, int) or not isinstance(columns, int):
                 return False, "Table rows and columns must be integers"
@@ -264,21 +264,21 @@ class ValidationManager:
             if rows <= 0 or columns <= 0:
                 return False, "Table rows and columns must be positive integers"
             
-            if rows > self.validation_rules['table_max_rows']:
-                return False, f"Too many rows ({rows}). Maximum: {self.validation_rules['table_max_rows']}"
+            if rows > self.validation_rules["table_max_rows"]:
+                return False, f"Too many rows ({rows}). Maximum: {self.validation_rules["table_max_rows"]}"
             
-            if columns > self.validation_rules['table_max_columns']:
-                return False, f"Too many columns ({columns}). Maximum: {self.validation_rules['table_max_columns']}"
+            if columns > self.validation_rules["table_max_columns"]:
+                return False, f"Too many columns ({columns}). Maximum: {self.validation_rules["table_max_columns"]}"
         
         elif element_type == "list":
-            list_type = kwargs.get('list_type')
+            list_type = kwargs.get("list_type")
             
             if not list_type:
-                return False, "List insertion requires 'list_type' parameter"
+                return False, "List insertion requires "list_type" parameter"
             
-            if list_type not in self.validation_rules['valid_list_types']:
-                valid_types = ', '.join(self.validation_rules['valid_list_types'])
-                return False, f"Invalid list_type '{list_type}'. Must be one of: {valid_types}"
+            if list_type not in self.validation_rules["valid_list_types"]:
+                valid_types = ", ".join(self.validation_rules["valid_list_types"])
+                return False, f"Invalid list_type "{list_type}". Must be one of: {valid_types}"
         
         return True, ""
     
@@ -297,13 +297,13 @@ class ValidationManager:
         Returns:
             Tuple of (is_valid, error_message)
         """
-        if section_type not in self.validation_rules['valid_section_types']:
-            valid_types = ', '.join(self.validation_rules['valid_section_types'])
-            return False, f"section_type must be one of: {valid_types}, got '{section_type}'"
+        if section_type not in self.validation_rules["valid_section_types"]:
+            valid_types = ", ".join(self.validation_rules["valid_section_types"])
+            return False, f"section_type must be one of: {valid_types}, got "{section_type}""
         
-        if header_footer_type not in self.validation_rules['valid_header_footer_types']:
-            valid_types = ', '.join(self.validation_rules['valid_header_footer_types'])
-            return False, f"header_footer_type must be one of: {valid_types}, got '{header_footer_type}'"
+        if header_footer_type not in self.validation_rules["valid_header_footer_types"]:
+            valid_types = ", ".join(self.validation_rules["valid_header_footer_types"])
+            return False, f"header_footer_type must be one of: {valid_types}, got "{header_footer_type}""
         
         return True, ""
     
@@ -328,12 +328,12 @@ class ValidationManager:
             if not isinstance(op, dict):
                 return False, f"Operation {i+1} must be a dictionary, got {type(op).__name__}"
             
-            if 'type' not in op:
-                return False, f"Operation {i+1} missing required 'type' field"
+            if "type" not in op:
+                return False, f"Operation {i+1} missing required "type" field"
             
             # Validate operation-specific fields using existing validation logic
             # This would call the validate_operation function from docs_helpers
-            # but we're centralizing the logic here
+            # but we"re centralizing the logic here
             
         return True, ""
     
@@ -351,7 +351,7 @@ class ValidationManager:
         if not isinstance(text, str):
             return False, f"Text must be a string, got {type(text).__name__}"
         
-        max_len = max_length or self.validation_rules['max_text_length']
+        max_len = max_length or self.validation_rules["max_text_length"]
         if len(text) > max_len:
             return False, f"Text too long ({len(text)} characters). Maximum: {max_len}"
         
@@ -365,16 +365,16 @@ class ValidationManager:
             Dictionary containing validation rules
         """
         return {
-            'constraints': self.validation_rules.copy(),
-            'supported_operations': {
-                'table_operations': ['create_table', 'populate_table'],
-                'text_operations': ['insert_text', 'format_text', 'find_replace'],
-                'element_operations': ['insert_table', 'insert_list', 'insert_page_break'],
-                'header_footer_operations': ['update_header', 'update_footer']
+            "constraints": self.validation_rules.copy(),
+            "supported_operations": {
+                "table_operations": ["create_table", "populate_table"],
+                "text_operations": ["insert_text", "format_text", "find_replace"],
+                "element_operations": ["insert_table", "insert_list", "insert_page_break"],
+                "header_footer_operations": ["update_header", "update_footer"]
             },
-            'data_formats': {
-                'table_data': "2D list of strings: [['col1', 'col2'], ['row1col1', 'row1col2']]",
-                'text_formatting': "Optional boolean/integer parameters for styling",
-                'document_indices': "Non-negative integers for position specification"
+            "data_formats": {
+                "table_data": "2D list of strings: [["col1", "col2"], ["row1col1", "row1col2"]]",
+                "text_formatting": "Optional boolean/integer parameters for styling",
+                "document_indices": "Non-negative integers for position specification"
             }
         }

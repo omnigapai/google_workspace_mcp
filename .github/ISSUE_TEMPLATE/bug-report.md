@@ -1,9 +1,9 @@
 ---
 name: Bug Report
 about: Create a report to help us improve Google Workspace MCP
-title: ''
-labels: ''
-assignees: ''
+title: ""
+labels: ""
+assignees: ""
 
 ---
 
@@ -15,9 +15,9 @@ Include the startup output including everything from the Active Configuration se
 
 **To Reproduce**
 Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
+1. Go to "..."
+2. Click on "...."
+3. Scroll down to "...."
 4. See error
 
 **Expected behavior**

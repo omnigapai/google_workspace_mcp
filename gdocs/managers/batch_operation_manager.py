@@ -75,10 +75,10 @@ class BatchOperationManager:
             
             # Process results
             metadata = {
-                'operations_count': len(operations),
-                'requests_count': len(requests),
-                'replies_count': len(result.get('replies', [])),
-                'operation_summary': operation_descriptions[:5]  # First 5 operations
+                "operations_count": len(operations),
+                "requests_count": len(requests),
+                "replies_count": len(result.get("replies", [])),
+                "operation_summary": operation_descriptions[:5]  # First 5 operations
             }
             
             summary = self._build_operation_summary(operation_descriptions)
@@ -111,7 +111,7 @@ class BatchOperationManager:
             if not is_valid:
                 raise ValueError(f"Operation {i+1}: {error_msg}")
             
-            op_type = op.get('type')
+            op_type = op.get("type")
             
             try:
                 # Build request based on operation type
@@ -150,27 +150,27 @@ class BatchOperationManager:
         Returns:
             Tuple of (request, description)
         """
-        if op_type == 'insert_text':
-            request = create_insert_text_request(op['index'], op['text'])
-            description = f"insert text at {op['index']}"
+        if op_type == "insert_text":
+            request = create_insert_text_request(op["index"], op["text"])
+            description = f"insert text at {op["index"]}"
             
-        elif op_type == 'delete_text':
-            request = create_delete_range_request(op['start_index'], op['end_index'])
-            description = f"delete text {op['start_index']}-{op['end_index']}"
+        elif op_type == "delete_text":
+            request = create_delete_range_request(op["start_index"], op["end_index"])
+            description = f"delete text {op["start_index"]}-{op["end_index"]}"
             
-        elif op_type == 'replace_text':
+        elif op_type == "replace_text":
             # Replace is delete + insert (must be done in this order)
-            delete_request = create_delete_range_request(op['start_index'], op['end_index'])
-            insert_request = create_insert_text_request(op['start_index'], op['text'])
+            delete_request = create_delete_range_request(op["start_index"], op["end_index"])
+            insert_request = create_insert_text_request(op["start_index"], op["text"])
             # Return both requests as a list
             request = [delete_request, insert_request]
-            description = f"replace text {op['start_index']}-{op['end_index']} with '{op['text'][:20]}{'...' if len(op['text']) > 20 else ''}'"
+            description = f"replace text {op["start_index"]}-{op["end_index"]} with "{op["text"][:20]}{"..." if len(op["text"]) > 20 else ""}""
             
-        elif op_type == 'format_text':
+        elif op_type == "format_text":
             request = create_format_text_request(
-                op['start_index'], op['end_index'],
-                op.get('bold'), op.get('italic'), op.get('underline'),
-                op.get('font_size'), op.get('font_family')
+                op["start_index"], op["end_index"],
+                op.get("bold"), op.get("italic"), op.get("underline"),
+                op.get("font_size"), op.get("font_family")
             )
             
             if not request:
@@ -179,35 +179,35 @@ class BatchOperationManager:
             # Build format description
             format_changes = []
             for param, name in [
-                ('bold', 'bold'), ('italic', 'italic'), ('underline', 'underline'),
-                ('font_size', 'font size'), ('font_family', 'font family')
+                ("bold", "bold"), ("italic", "italic"), ("underline", "underline"),
+                ("font_size", "font size"), ("font_family", "font family")
             ]:
                 if op.get(param) is not None:
-                    value = f"{op[param]}pt" if param == 'font_size' else op[param]
+                    value = f"{op[param]}pt" if param == "font_size" else op[param]
                     format_changes.append(f"{name}: {value}")
                     
-            description = f"format text {op['start_index']}-{op['end_index']} ({', '.join(format_changes)})"
+            description = f"format text {op["start_index"]}-{op["end_index"]} ({", ".join(format_changes)})"
             
-        elif op_type == 'insert_table':
-            request = create_insert_table_request(op['index'], op['rows'], op['columns'])
-            description = f"insert {op['rows']}x{op['columns']} table at {op['index']}"
+        elif op_type == "insert_table":
+            request = create_insert_table_request(op["index"], op["rows"], op["columns"])
+            description = f"insert {op["rows"]}x{op["columns"]} table at {op["index"]}"
             
-        elif op_type == 'insert_page_break':
-            request = create_insert_page_break_request(op['index'])
-            description = f"insert page break at {op['index']}"
+        elif op_type == "insert_page_break":
+            request = create_insert_page_break_request(op["index"])
+            description = f"insert page break at {op["index"]}"
             
-        elif op_type == 'find_replace':
+        elif op_type == "find_replace":
             request = create_find_replace_request(
-                op['find_text'], op['replace_text'], op.get('match_case', False)
+                op["find_text"], op["replace_text"], op.get("match_case", False)
             )
-            description = f"find/replace '{op['find_text']}' → '{op['replace_text']}'"
+            description = f"find/replace "{op["find_text"]}" → "{op["replace_text"]}""
             
         else:
             supported_types = [
-                'insert_text', 'delete_text', 'replace_text', 'format_text',
-                'insert_table', 'insert_page_break', 'find_replace'
+                "insert_text", "delete_text", "replace_text", "format_text",
+                "insert_table", "insert_page_break", "find_replace"
             ]
-            raise ValueError(f"Unsupported operation type '{op_type}'. Supported: {', '.join(supported_types)}")
+            raise ValueError(f"Unsupported operation type "{op_type}". Supported: {", ".join(supported_types)}")
             
         return request, description
     
@@ -229,7 +229,7 @@ class BatchOperationManager:
         return await asyncio.to_thread(
             self.service.documents().batchUpdate(
                 documentId=document_id,
-                body={'requests': requests}
+                body={"requests": requests}
             ).execute
         )
     
@@ -247,11 +247,11 @@ class BatchOperationManager:
             return "no operations"
             
         summary_items = operation_descriptions[:3]  # Show first 3 operations
-        summary = ', '.join(summary_items)
+        summary = ", ".join(summary_items)
         
         if len(operation_descriptions) > 3:
             remaining = len(operation_descriptions) - 3
-            summary += f" and {remaining} more operation{'s' if remaining > 1 else ''}"
+            summary += f" and {remaining} more operation{"s" if remaining > 1 else ""}"
             
         return summary
     
@@ -263,39 +263,39 @@ class BatchOperationManager:
             Dictionary with supported operation types and their required parameters
         """
         return {
-            'supported_operations': {
-                'insert_text': {
-                    'required': ['index', 'text'],
-                    'description': 'Insert text at specified index'
+            "supported_operations": {
+                "insert_text": {
+                    "required": ["index", "text"],
+                    "description": "Insert text at specified index"
                 },
-                'delete_text': {
-                    'required': ['start_index', 'end_index'],
-                    'description': 'Delete text in specified range'
+                "delete_text": {
+                    "required": ["start_index", "end_index"],
+                    "description": "Delete text in specified range"
                 },
-                'replace_text': {
-                    'required': ['start_index', 'end_index', 'text'],
-                    'description': 'Replace text in range with new text'
+                "replace_text": {
+                    "required": ["start_index", "end_index", "text"],
+                    "description": "Replace text in range with new text"
                 },
-                'format_text': {
-                    'required': ['start_index', 'end_index'],
-                    'optional': ['bold', 'italic', 'underline', 'font_size', 'font_family'],
-                    'description': 'Apply formatting to text range'
+                "format_text": {
+                    "required": ["start_index", "end_index"],
+                    "optional": ["bold", "italic", "underline", "font_size", "font_family"],
+                    "description": "Apply formatting to text range"
                 },
-                'insert_table': {
-                    'required': ['index', 'rows', 'columns'],
-                    'description': 'Insert table at specified index'
+                "insert_table": {
+                    "required": ["index", "rows", "columns"],
+                    "description": "Insert table at specified index"
                 },
-                'insert_page_break': {
-                    'required': ['index'],
-                    'description': 'Insert page break at specified index'
+                "insert_page_break": {
+                    "required": ["index"],
+                    "description": "Insert page break at specified index"
                 },
-                'find_replace': {
-                    'required': ['find_text', 'replace_text'],
-                    'optional': ['match_case'],
-                    'description': 'Find and replace text throughout document'
+                "find_replace": {
+                    "required": ["find_text", "replace_text"],
+                    "optional": ["match_case"],
+                    "description": "Find and replace text throughout document"
                 }
             },
-            'example_operations': [
+            "example_operations": [
                 {"type": "insert_text", "index": 1, "text": "Hello World"},
                 {"type": "format_text", "start_index": 1, "end_index": 12, "bold": True},
                 {"type": "insert_table", "index": 20, "rows": 2, "columns": 3}

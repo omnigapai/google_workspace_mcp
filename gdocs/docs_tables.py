@@ -27,13 +27,13 @@ def build_table_population_requests(
         List of request dictionaries for batch update
     """
     requests = []
-    cells = table_info.get('cells', [])
+    cells = table_info.get("cells", [])
     
     if not cells:
         logger.warning("No cell information found in table_info")
         return requests
     
-    # Process each cell - ONLY INSERT, DON'T DELETE
+    # Process each cell - ONLY INSERT, DON"T DELETE
     for row_idx, row_data in enumerate(data):
         if row_idx >= len(cells):
             logger.warning(f"Data has more rows ({len(data)}) than table ({len(cells)})")
@@ -48,56 +48,56 @@ def build_table_population_requests(
             
             # For new empty tables, use the insertion index
             # For tables with existing content, check if cell only contains newline
-            existing_content = cell.get('content', '').strip()
+            existing_content = cell.get("content", "").strip()
             
             # Only insert if we have text to insert
             if cell_text:
                 # Use the specific insertion index for this cell
-                insertion_index = cell.get('insertion_index', cell['start_index'] + 1)
+                insertion_index = cell.get("insertion_index", cell["start_index"] + 1)
                 
                 # If cell only contains a newline, replace it
-                if existing_content == '' or existing_content == '\n':
+                if existing_content == "" or existing_content == "\n":
                     # Cell is empty (just newline), insert at the insertion index
                     requests.append({
-                        'insertText': {
-                            'location': {'index': insertion_index},
-                            'text': cell_text
+                        "insertText": {
+                            "location": {"index": insertion_index},
+                            "text": cell_text
                         }
                     })
                     
                     # Apply bold formatting to first row if requested
                     if bold_headers and row_idx == 0:
                         requests.append({
-                            'updateTextStyle': {
-                                'range': {
-                                    'startIndex': insertion_index,
-                                    'endIndex': insertion_index + len(cell_text)
+                            "updateTextStyle": {
+                                "range": {
+                                    "startIndex": insertion_index,
+                                    "endIndex": insertion_index + len(cell_text)
                                 },
-                                'textStyle': {'bold': True},
-                                'fields': 'bold'
+                                "textStyle": {"bold": True},
+                                "fields": "bold"
                             }
                         })
                 else:
                     # Cell has content, append after existing content
                     # Find the end of existing content
-                    cell_end = cell['end_index'] - 1  # Don't include cell end marker
+                    cell_end = cell["end_index"] - 1  # Don"t include cell end marker
                     requests.append({
-                        'insertText': {
-                            'location': {'index': cell_end},
-                            'text': cell_text
+                        "insertText": {
+                            "location": {"index": cell_end},
+                            "text": cell_text
                         }
                     })
                     
                     # Apply bold formatting to first row if requested
                     if bold_headers and row_idx == 0:
                         requests.append({
-                            'updateTextStyle': {
-                                'range': {
-                                    'startIndex': cell_end,
-                                    'endIndex': cell_end + len(cell_text)
+                            "updateTextStyle": {
+                                "range": {
+                                    "startIndex": cell_end,
+                                    "endIndex": cell_end + len(cell_text)
                                 },
-                                'textStyle': {'bold': True},
-                                'fields': 'bold'
+                                "textStyle": {"bold": True},
+                                "fields": "bold"
                             }
                         })
     
@@ -122,9 +122,9 @@ def calculate_cell_positions(
     Returns:
         2D list of cell position dictionaries
     """
-    if existing_table_data and 'cells' in existing_table_data:
+    if existing_table_data and "cells" in existing_table_data:
         # Use actual positions from existing table
-        return existing_table_data['cells']
+        return existing_table_data["cells"]
     
     # Estimate positions for a new table
     # Note: These are estimates; actual positions depend on content
@@ -139,10 +139,10 @@ def calculate_cell_positions(
             cell_end = current_index + 2  # Minimum cell size
             
             row_cells.append({
-                'row': row_idx,
-                'column': col_idx,
-                'start_index': cell_start,
-                'end_index': cell_end
+                "row": row_idx,
+                "column": col_idx,
+                "start_index": cell_start,
+                "end_index": cell_end
             })
             
             current_index = cell_end + 1
@@ -164,13 +164,13 @@ def format_table_data(raw_data: Union[List[List[str]], List[str], str]) -> List[
     """
     if isinstance(raw_data, str):
         # Parse delimited string (detect delimiter)
-        lines = raw_data.strip().split('\n')
-        if '\t' in raw_data:
+        lines = raw_data.strip().split("\n")
+        if "\t" in raw_data:
             # Tab-delimited
-            return [line.split('\t') for line in lines]
-        elif ',' in raw_data:
+            return [line.split("\t") for line in lines]
+        elif "," in raw_data:
             # Comma-delimited (simple CSV)
-            return [line.split(',') for line in lines]
+            return [line.split(",") for line in lines]
         else:
             # Space-delimited or single column
             return [[cell.strip() for cell in line.split()] for line in lines]
@@ -179,7 +179,7 @@ def format_table_data(raw_data: Union[List[List[str]], List[str], str]) -> List[
         if not raw_data:
             return [[]]
         
-        # Check if it's already a 2D list
+        # Check if it"s already a 2D list
         if isinstance(raw_data[0], list):
             # Ensure all cells are strings
             return [[str(cell) for cell in row] for row in raw_data]
@@ -230,19 +230,19 @@ def create_table_with_data(
     # Ensure all rows have the same number of columns
     for row in full_data:
         while len(row) < cols:
-            row.append('')
+            row.append("")
     
     # Create the table
     requests.append({
-        'insertTable': {
-            'location': {'index': index},
-            'rows': rows,
-            'columns': cols
+        "insertTable": {
+            "location": {"index": index},
+            "rows": rows,
+            "columns": cols
         }
     })
     
     # Build text insertion requests for each cell
-    # Note: In practice, we'd need to get the actual document structure
+    # Note: In practice, we"d need to get the actual document structure
     # after table creation to get accurate indices
     
     return requests
@@ -269,60 +269,60 @@ def build_table_style_requests(
     requests = []
     
     # Table cell style update
-    if any(k in style_options for k in ['border_width', 'border_color', 'background_color']):
+    if any(k in style_options for k in ["border_width", "border_color", "background_color"]):
         table_cell_style = {}
         fields = []
         
-        if 'border_width' in style_options:
-            border_width = {'magnitude': style_options['border_width'], 'unit': 'PT'}
-            table_cell_style['borderTop'] = {'width': border_width}
-            table_cell_style['borderBottom'] = {'width': border_width}
-            table_cell_style['borderLeft'] = {'width': border_width}
-            table_cell_style['borderRight'] = {'width': border_width}
-            fields.extend(['borderTop', 'borderBottom', 'borderLeft', 'borderRight'])
+        if "border_width" in style_options:
+            border_width = {"magnitude": style_options["border_width"], "unit": "PT"}
+            table_cell_style["borderTop"] = {"width": border_width}
+            table_cell_style["borderBottom"] = {"width": border_width}
+            table_cell_style["borderLeft"] = {"width": border_width}
+            table_cell_style["borderRight"] = {"width": border_width}
+            fields.extend(["borderTop", "borderBottom", "borderLeft", "borderRight"])
         
-        if 'border_color' in style_options:
-            border_color = {'color': {'rgbColor': style_options['border_color']}}
-            if 'borderTop' in table_cell_style:
-                table_cell_style['borderTop']['color'] = border_color['color']
-                table_cell_style['borderBottom']['color'] = border_color['color']
-                table_cell_style['borderLeft']['color'] = border_color['color']
-                table_cell_style['borderRight']['color'] = border_color['color']
+        if "border_color" in style_options:
+            border_color = {"color": {"rgbColor": style_options["border_color"]}}
+            if "borderTop" in table_cell_style:
+                table_cell_style["borderTop"]["color"] = border_color["color"]
+                table_cell_style["borderBottom"]["color"] = border_color["color"]
+                table_cell_style["borderLeft"]["color"] = border_color["color"]
+                table_cell_style["borderRight"]["color"] = border_color["color"]
         
-        if 'background_color' in style_options:
-            table_cell_style['backgroundColor'] = {
-                'color': {'rgbColor': style_options['background_color']}
+        if "background_color" in style_options:
+            table_cell_style["backgroundColor"] = {
+                "color": {"rgbColor": style_options["background_color"]}
             }
-            fields.append('backgroundColor')
+            fields.append("backgroundColor")
         
         if table_cell_style and fields:
             requests.append({
-                'updateTableCellStyle': {
-                    'tableStartLocation': {'index': table_start_index},
-                    'tableCellStyle': table_cell_style,
-                    'fields': ','.join(fields)
+                "updateTableCellStyle": {
+                    "tableStartLocation": {"index": table_start_index},
+                    "tableCellStyle": table_cell_style,
+                    "fields": ",".join(fields)
                 }
             })
     
     # Header row specific styling
-    if 'header_background' in style_options:
+    if "header_background" in style_options:
         requests.append({
-            'updateTableCellStyle': {
-                'tableRange': {
-                    'tableCellLocation': {
-                        'tableStartLocation': {'index': table_start_index},
-                        'rowIndex': 0,
-                        'columnIndex': 0
+            "updateTableCellStyle": {
+                "tableRange": {
+                    "tableCellLocation": {
+                        "tableStartLocation": {"index": table_start_index},
+                        "rowIndex": 0,
+                        "columnIndex": 0
                     },
-                    'rowSpan': 1,
-                    'columnSpan': 100  # Large number to cover all columns
+                    "rowSpan": 1,
+                    "columnSpan": 100  # Large number to cover all columns
                 },
-                'tableCellStyle': {
-                    'backgroundColor': {
-                        'color': {'rgbColor': style_options['header_background']}
+                "tableCellStyle": {
+                    "backgroundColor": {
+                        "color": {"rgbColor": style_options["header_background"]}
                     }
                 },
-                'fields': 'backgroundColor'
+                "fields": "backgroundColor"
             }
         })
     
@@ -340,12 +340,12 @@ def extract_table_as_data(table_info: Dict[str, Any]) -> List[List[str]]:
         2D list of cell contents
     """
     data = []
-    cells = table_info.get('cells', [])
+    cells = table_info.get("cells", [])
     
     for row in cells:
         row_data = []
         for cell in row:
-            row_data.append(cell.get('content', '').strip())
+            row_data.append(cell.get("content", "").strip())
         data.append(row_data)
     
     return data
@@ -370,9 +370,9 @@ def find_table_by_content(
     search_text = search_text if case_sensitive else search_text.lower()
     
     for idx, table in enumerate(tables):
-        for row in table.get('cells', []):
+        for row in table.get("cells", []):
             for cell in row:
-                cell_content = cell.get('content', '')
+                cell_content = cell.get("content", "")
                 if not case_sensitive:
                     cell_content = cell_content.lower()
                 
@@ -412,10 +412,10 @@ def validate_table_data(data: List[List[str]]) -> Tuple[bool, str]:
         Tuple of (is_valid, error_message_with_examples)
     """
     if not data:
-        return False, "Data is empty. Use format: [['col1', 'col2'], ['row1col1', 'row1col2']]"
+        return False, "Data is empty. Use format: [["col1", "col2"], ["row1col1", "row1col2"]]"
     
     if not isinstance(data, list):
-        return False, f"Data must be a list, got {type(data).__name__}. Use format: [['col1', 'col2'], ['row1col1', 'row1col2']]"
+        return False, f"Data must be a list, got {type(data).__name__}. Use format: [["col1", "col2"], ["row1col1", "row1col2"]]"
     
     if not all(isinstance(row, list) for row in data):
         return False, f"Data must be a 2D list (list of lists). Each row must be a list. Check your format: {data}"

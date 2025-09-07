@@ -64,22 +64,22 @@ startCommand:
   commandFunction:
     |-
     (config) => {
-      const args = ['run', 'main.py', '--transport', 'streamable-http'];
+      const args = ["run", "main.py", "--transport", "streamable-http"];
       
       // Add single-user flag if enabled
       if (config.mcpSingleUserMode) {
-        args.push('--single-user');
+        args.push("--single-user");
       }
       
       // Add tools selection if specified
-      if (config.tools && config.tools.trim() !== '') {
-        args.push('--tools');
-        args.push(...config.tools.split(',').map(t => t.trim()).filter(t => t));
+      if (config.tools && config.tools.trim() !== "") {
+        args.push("--tools");
+        args.push(...config.tools.split(",").map(t => t.trim()).filter(t => t));
       }
       
       return {
-        command: 'uv',
-        args: ['run', 'python', 'main.py'],
+        command: "uv",
+        args: ["run", "python", "main.py"],
         env: {
           GOOGLE_OAUTH_CLIENT_ID: config.googleOauthClientId,
           GOOGLE_OAUTH_CLIENT_SECRET: config.googleOauthClientSecret,
@@ -90,10 +90,10 @@ startCommand:
           WORKSPACE_MCP_PORT: String(config.workspaceMcpPort),
           PORT: String(config.workspaceMcpPort),
           ...(config.workspaceExternalUrl && { WORKSPACE_EXTERNAL_URL: config.workspaceExternalUrl }),
-          ...(config.mcpSingleUserMode && { MCP_SINGLE_USER_MODE: '1' }),
-          ...(config.mcpEnableOauth21 && { MCP_ENABLE_OAUTH21: 'true' }),
-          ...(config.workspaceMcpStatelessMode && { WORKSPACE_MCP_STATELESS_MODE: 'true' }),
-          ...(config.oauthlibInsecureTransport && { OAUTHLIB_INSECURE_TRANSPORT: '1' }),
+          ...(config.mcpSingleUserMode && { MCP_SINGLE_USER_MODE: "1" }),
+          ...(config.mcpEnableOauth21 && { MCP_ENABLE_OAUTH21: "true" }),
+          ...(config.workspaceMcpStatelessMode && { WORKSPACE_MCP_STATELESS_MODE: "true" }),
+          ...(config.oauthlibInsecureTransport && { OAUTHLIB_INSECURE_TRANSPORT: "1" }),
           ...(config.googlePseApiKey && { GOOGLE_PSE_API_KEY: config.googlePseApiKey }),
           ...(config.googlePseEngineId && { GOOGLE_PSE_ENGINE_ID: config.googlePseEngineId })
         }

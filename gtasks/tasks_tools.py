@@ -33,14 +33,14 @@ async def list_task_lists(
     List all task lists for the user.
 
     Args:
-        user_google_email (str): The user's Google email address. Required.
+        user_google_email (str): The user"s Google email address. Required.
         max_results (Optional[str]): Maximum number of task lists to return (default: 1000, max: 1000).
         page_token (Optional[str]): Token for pagination.
 
     Returns:
         str: List of task lists with their IDs, titles, and details.
     """
-    logger.info(f"[list_task_lists] Invoked. Email: '{user_google_email}'")
+    logger.info(f"[list_task_lists] Invoked. Email: "{user_google_email}"")
 
     try:
         params = {}
@@ -61,8 +61,8 @@ async def list_task_lists(
 
         response = f"Task Lists for {user_google_email}:\n"
         for task_list in task_lists:
-            response += f"- {task_list['title']} (ID: {task_list['id']})\n"
-            response += f"  Updated: {task_list.get('updated', 'N/A')}\n"
+            response += f"- {task_list["title"]} (ID: {task_list["id"]})\n"
+            response += f"  Updated: {task_list.get("updated", "N/A")}\n"
 
         if next_page_token:
             response += f"\nNext page token: {next_page_token}"
@@ -71,7 +71,7 @@ async def list_task_lists(
         return response
 
     except HttpError as error:
-        message = f"API error: {error}. You might need to re-authenticate. LLM: Try 'start_google_auth' with the user's email ({user_google_email}) and service_name='Google Tasks'."
+        message = f"API error: {error}. You might need to re-authenticate. LLM: Try "start_google_auth" with the user"s email ({user_google_email}) and service_name="Google Tasks"."
         logger.error(message, exc_info=True)
         raise Exception(message)
     except Exception as e:
@@ -92,13 +92,13 @@ async def get_task_list(
     Get details of a specific task list.
 
     Args:
-        user_google_email (str): The user's Google email address. Required.
+        user_google_email (str): The user"s Google email address. Required.
         task_list_id (str): The ID of the task list to retrieve.
 
     Returns:
         str: Task list details including title, ID, and last updated time.
     """
-    logger.info(f"[get_task_list] Invoked. Email: '{user_google_email}', Task List ID: {task_list_id}")
+    logger.info(f"[get_task_list] Invoked. Email: "{user_google_email}", Task List ID: {task_list_id}")
 
     try:
         task_list = await asyncio.to_thread(
@@ -106,16 +106,16 @@ async def get_task_list(
         )
 
         response = f"""Task List Details for {user_google_email}:
-- Title: {task_list['title']}
-- ID: {task_list['id']}
-- Updated: {task_list.get('updated', 'N/A')}
-- Self Link: {task_list.get('selfLink', 'N/A')}"""
+- Title: {task_list["title"]}
+- ID: {task_list["id"]}
+- Updated: {task_list.get("updated", "N/A")}
+- Self Link: {task_list.get("selfLink", "N/A")}"""
 
-        logger.info(f"Retrieved task list '{task_list['title']}' for {user_google_email}")
+        logger.info(f"Retrieved task list "{task_list["title"]}" for {user_google_email}")
         return response
 
     except HttpError as error:
-        message = f"API error: {error}. You might need to re-authenticate. LLM: Try 'start_google_auth' with the user's email ({user_google_email}) and service_name='Google Tasks'."
+        message = f"API error: {error}. You might need to re-authenticate. LLM: Try "start_google_auth" with the user"s email ({user_google_email}) and service_name="Google Tasks"."
         logger.error(message, exc_info=True)
         raise Exception(message)
     except Exception as e:
@@ -136,13 +136,13 @@ async def create_task_list(
     Create a new task list.
 
     Args:
-        user_google_email (str): The user's Google email address. Required.
+        user_google_email (str): The user"s Google email address. Required.
         title (str): The title of the new task list.
 
     Returns:
         str: Confirmation message with the new task list ID and details.
     """
-    logger.info(f"[create_task_list] Invoked. Email: '{user_google_email}', Title: '{title}'")
+    logger.info(f"[create_task_list] Invoked. Email: "{user_google_email}", Title: "{title}"")
 
     try:
         body = {
@@ -154,16 +154,16 @@ async def create_task_list(
         )
 
         response = f"""Task List Created for {user_google_email}:
-- Title: {result['title']}
-- ID: {result['id']}
-- Created: {result.get('updated', 'N/A')}
-- Self Link: {result.get('selfLink', 'N/A')}"""
+- Title: {result["title"]}
+- ID: {result["id"]}
+- Created: {result.get("updated", "N/A")}
+- Self Link: {result.get("selfLink", "N/A")}"""
 
-        logger.info(f"Created task list '{title}' with ID {result['id']} for {user_google_email}")
+        logger.info(f"Created task list "{title}" with ID {result["id"]} for {user_google_email}")
         return response
 
     except HttpError as error:
-        message = f"API error: {error}. You might need to re-authenticate. LLM: Try 'start_google_auth' with the user's email ({user_google_email}) and service_name='Google Tasks'."
+        message = f"API error: {error}. You might need to re-authenticate. LLM: Try "start_google_auth" with the user"s email ({user_google_email}) and service_name="Google Tasks"."
         logger.error(message, exc_info=True)
         raise Exception(message)
     except Exception as e:
@@ -185,14 +185,14 @@ async def update_task_list(
     Update an existing task list.
 
     Args:
-        user_google_email (str): The user's Google email address. Required.
+        user_google_email (str): The user"s Google email address. Required.
         task_list_id (str): The ID of the task list to update.
         title (str): The new title for the task list.
 
     Returns:
         str: Confirmation message with updated task list details.
     """
-    logger.info(f"[update_task_list] Invoked. Email: '{user_google_email}', Task List ID: {task_list_id}, New Title: '{title}'")
+    logger.info(f"[update_task_list] Invoked. Email: "{user_google_email}", Task List ID: {task_list_id}, New Title: "{title}"")
 
     try:
         body = {
@@ -205,15 +205,15 @@ async def update_task_list(
         )
 
         response = f"""Task List Updated for {user_google_email}:
-- Title: {result['title']}
-- ID: {result['id']}
-- Updated: {result.get('updated', 'N/A')}"""
+- Title: {result["title"]}
+- ID: {result["id"]}
+- Updated: {result.get("updated", "N/A")}"""
 
-        logger.info(f"Updated task list {task_list_id} with new title '{title}' for {user_google_email}")
+        logger.info(f"Updated task list {task_list_id} with new title "{title}" for {user_google_email}")
         return response
 
     except HttpError as error:
-        message = f"API error: {error}. You might need to re-authenticate. LLM: Try 'start_google_auth' with the user's email ({user_google_email}) and service_name='Google Tasks'."
+        message = f"API error: {error}. You might need to re-authenticate. LLM: Try "start_google_auth" with the user"s email ({user_google_email}) and service_name="Google Tasks"."
         logger.error(message, exc_info=True)
         raise Exception(message)
     except Exception as e:
@@ -234,13 +234,13 @@ async def delete_task_list(
     Delete a task list. Note: This will also delete all tasks in the list.
 
     Args:
-        user_google_email (str): The user's Google email address. Required.
+        user_google_email (str): The user"s Google email address. Required.
         task_list_id (str): The ID of the task list to delete.
 
     Returns:
         str: Confirmation message.
     """
-    logger.info(f"[delete_task_list] Invoked. Email: '{user_google_email}', Task List ID: {task_list_id}")
+    logger.info(f"[delete_task_list] Invoked. Email: "{user_google_email}", Task List ID: {task_list_id}")
 
     try:
         await asyncio.to_thread(
@@ -253,7 +253,7 @@ async def delete_task_list(
         return response
 
     except HttpError as error:
-        message = f"API error: {error}. You might need to re-authenticate. LLM: Try 'start_google_auth' with the user's email ({user_google_email}) and service_name='Google Tasks'."
+        message = f"API error: {error}. You might need to re-authenticate. LLM: Try "start_google_auth" with the user"s email ({user_google_email}) and service_name="Google Tasks"."
         logger.error(message, exc_info=True)
         raise Exception(message)
     except Exception as e:
@@ -285,7 +285,7 @@ async def list_tasks(
     List all tasks in a specific task list.
 
     Args:
-        user_google_email (str): The user's Google email address. Required.
+        user_google_email (str): The user"s Google email address. Required.
         task_list_id (str): The ID of the task list to retrieve tasks from.
         max_results (Optional[int]): Maximum number of tasks to return. (default: 20, max: 10000).
         page_token (Optional[str]): Token for pagination.
@@ -302,7 +302,7 @@ async def list_tasks(
     Returns:
         str: List of tasks with their details.
     """
-    logger.info(f"[list_tasks] Invoked. Email: '{user_google_email}', Task List ID: {task_list_id}")
+    logger.info(f"[list_tasks] Invoked. Email: "{user_google_email}", Task List ID: {task_list_id}")
 
     try:
         params = {"tasklist": task_list_id}
@@ -363,15 +363,15 @@ async def list_tasks(
 
         response = f"Tasks in list {task_list_id} for {user_google_email}:\n"
         for task in tasks:
-            response += f"- {task.get('title', 'Untitled')} (ID: {task['id']})\n"
-            response += f"  Status: {task.get('status', 'N/A')}\n"
-            if task.get('due'):
-                response += f"  Due: {task['due']}\n"
-            if task.get('notes'):
-                response += f"  Notes: {task['notes'][:100]}{'...' if len(task['notes']) > 100 else ''}\n"
-            if task.get('completed'):
-                response += f"  Completed: {task['completed']}\n"
-            response += f"  Updated: {task.get('updated', 'N/A')}\n"
+            response += f"- {task.get("title", "Untitled")} (ID: {task["id"]})\n"
+            response += f"  Status: {task.get("status", "N/A")}\n"
+            if task.get("due"):
+                response += f"  Due: {task["due"]}\n"
+            if task.get("notes"):
+                response += f"  Notes: {task["notes"][:100]}{"..." if len(task["notes"]) > 100 else ""}\n"
+            if task.get("completed"):
+                response += f"  Completed: {task["completed"]}\n"
+            response += f"  Updated: {task.get("updated", "N/A")}\n"
             response += "\n"
 
         if next_page_token:
@@ -386,7 +386,7 @@ async def list_tasks(
         return response
 
     except HttpError as error:
-        message = f"API error: {error}. You might need to re-authenticate. LLM: Try 'start_google_auth' with the user's email ({user_google_email}) and service_name='Google Tasks'."
+        message = f"API error: {error}. You might need to re-authenticate. LLM: Try "start_google_auth" with the user"s email ({user_google_email}) and service_name="Google Tasks"."
         logger.error(message, exc_info=True)
         raise Exception(message)
     except Exception as e:
@@ -426,7 +426,7 @@ def sort_tasks_by_position(tasks: List[Dict[str, str]]) -> int:
             parent_position = parent_positions.get(parent)
             if parent_position is None:
                 orphaned_subtasks += 1
-                logger.debug(f"Orphaned task: {task['title']}, id = {task['id']}, parent = {parent}")
+                logger.debug(f"Orphaned task: {task["title"]}, id = {task["id"]}, parent = {parent}")
                 return (f"{LIST_TASKS_MAX_POSITION}", parent, position)
             return (parent_position, position, "")
 
@@ -447,14 +447,14 @@ async def get_task(
     Get details of a specific task.
 
     Args:
-        user_google_email (str): The user's Google email address. Required.
+        user_google_email (str): The user"s Google email address. Required.
         task_list_id (str): The ID of the task list containing the task.
         task_id (str): The ID of the task to retrieve.
 
     Returns:
         str: Task details including title, notes, status, due date, etc.
     """
-    logger.info(f"[get_task] Invoked. Email: '{user_google_email}', Task List ID: {task_list_id}, Task ID: {task_id}")
+    logger.info(f"[get_task] Invoked. Email: "{user_google_email}", Task List ID: {task_list_id}, Task ID: {task_id}")
 
     try:
         task = await asyncio.to_thread(
@@ -462,31 +462,31 @@ async def get_task(
         )
 
         response = f"""Task Details for {user_google_email}:
-- Title: {task.get('title', 'Untitled')}
-- ID: {task['id']}
-- Status: {task.get('status', 'N/A')}
-- Updated: {task.get('updated', 'N/A')}"""
+- Title: {task.get("title", "Untitled")}
+- ID: {task["id"]}
+- Status: {task.get("status", "N/A")}
+- Updated: {task.get("updated", "N/A")}"""
 
-        if task.get('due'):
-            response += f"\n- Due Date: {task['due']}"
-        if task.get('completed'):
-            response += f"\n- Completed: {task['completed']}"
-        if task.get('notes'):
-            response += f"\n- Notes: {task['notes']}"
-        if task.get('parent'):
-            response += f"\n- Parent Task ID: {task['parent']}"
-        if task.get('position'):
-            response += f"\n- Position: {task['position']}"
-        if task.get('selfLink'):
-            response += f"\n- Self Link: {task['selfLink']}"
-        if task.get('webViewLink'):
-            response += f"\n- Web View Link: {task['webViewLink']}"
+        if task.get("due"):
+            response += f"\n- Due Date: {task["due"]}"
+        if task.get("completed"):
+            response += f"\n- Completed: {task["completed"]}"
+        if task.get("notes"):
+            response += f"\n- Notes: {task["notes"]}"
+        if task.get("parent"):
+            response += f"\n- Parent Task ID: {task["parent"]}"
+        if task.get("position"):
+            response += f"\n- Position: {task["position"]}"
+        if task.get("selfLink"):
+            response += f"\n- Self Link: {task["selfLink"]}"
+        if task.get("webViewLink"):
+            response += f"\n- Web View Link: {task["webViewLink"]}"
 
-        logger.info(f"Retrieved task '{task.get('title', 'Untitled')}' for {user_google_email}")
+        logger.info(f"Retrieved task "{task.get("title", "Untitled")}" for {user_google_email}")
         return response
 
     except HttpError as error:
-        message = f"API error: {error}. You might need to re-authenticate. LLM: Try 'start_google_auth' with the user's email ({user_google_email}) and service_name='Google Tasks'."
+        message = f"API error: {error}. You might need to re-authenticate. LLM: Try "start_google_auth" with the user"s email ({user_google_email}) and service_name="Google Tasks"."
         logger.error(message, exc_info=True)
         raise Exception(message)
     except Exception as e:
@@ -512,7 +512,7 @@ async def create_task(
     Create a new task in a task list.
 
     Args:
-        user_google_email (str): The user's Google email address. Required.
+        user_google_email (str): The user"s Google email address. Required.
         task_list_id (str): The ID of the task list to create the task in.
         title (str): The title of the task.
         notes (Optional[str]): Notes/description for the task.
@@ -523,7 +523,7 @@ async def create_task(
     Returns:
         str: Confirmation message with the new task ID and details.
     """
-    logger.info(f"[create_task] Invoked. Email: '{user_google_email}', Task List ID: {task_list_id}, Title: '{title}'")
+    logger.info(f"[create_task] Invoked. Email: "{user_google_email}", Task List ID: {task_list_id}, Title: "{title}"")
 
     try:
         body = {
@@ -545,23 +545,23 @@ async def create_task(
         )
 
         response = f"""Task Created for {user_google_email}:
-- Title: {result['title']}
-- ID: {result['id']}
-- Status: {result.get('status', 'N/A')}
-- Updated: {result.get('updated', 'N/A')}"""
+- Title: {result["title"]}
+- ID: {result["id"]}
+- Status: {result.get("status", "N/A")}
+- Updated: {result.get("updated", "N/A")}"""
 
-        if result.get('due'):
-            response += f"\n- Due Date: {result['due']}"
-        if result.get('notes'):
-            response += f"\n- Notes: {result['notes']}"
-        if result.get('webViewLink'):
-            response += f"\n- Web View Link: {result['webViewLink']}"
+        if result.get("due"):
+            response += f"\n- Due Date: {result["due"]}"
+        if result.get("notes"):
+            response += f"\n- Notes: {result["notes"]}"
+        if result.get("webViewLink"):
+            response += f"\n- Web View Link: {result["webViewLink"]}"
 
-        logger.info(f"Created task '{title}' with ID {result['id']} for {user_google_email}")
+        logger.info(f"Created task "{title}" with ID {result["id"]} for {user_google_email}")
         return response
 
     except HttpError as error:
-        message = f"API error: {error}. You might need to re-authenticate. LLM: Try 'start_google_auth' with the user's email ({user_google_email}) and service_name='Google Tasks'."
+        message = f"API error: {error}. You might need to re-authenticate. LLM: Try "start_google_auth" with the user"s email ({user_google_email}) and service_name="Google Tasks"."
         logger.error(message, exc_info=True)
         raise Exception(message)
     except Exception as e:
@@ -587,7 +587,7 @@ async def update_task(
     Update an existing task.
 
     Args:
-        user_google_email (str): The user's Google email address. Required.
+        user_google_email (str): The user"s Google email address. Required.
         task_list_id (str): The ID of the task list containing the task.
         task_id (str): The ID of the task to update.
         title (Optional[str]): New title for the task.
@@ -598,7 +598,7 @@ async def update_task(
     Returns:
         str: Confirmation message with updated task details.
     """
-    logger.info(f"[update_task] Invoked. Email: '{user_google_email}', Task List ID: {task_list_id}, Task ID: {task_id}")
+    logger.info(f"[update_task] Invoked. Email: "{user_google_email}", Task List ID: {task_list_id}, Task ID: {task_id}")
 
     try:
         # First get the current task to build the update body
@@ -627,23 +627,23 @@ async def update_task(
         )
 
         response = f"""Task Updated for {user_google_email}:
-- Title: {result['title']}
-- ID: {result['id']}
-- Status: {result.get('status', 'N/A')}
-- Updated: {result.get('updated', 'N/A')}"""
+- Title: {result["title"]}
+- ID: {result["id"]}
+- Status: {result.get("status", "N/A")}
+- Updated: {result.get("updated", "N/A")}"""
 
-        if result.get('due'):
-            response += f"\n- Due Date: {result['due']}"
-        if result.get('notes'):
-            response += f"\n- Notes: {result['notes']}"
-        if result.get('completed'):
-            response += f"\n- Completed: {result['completed']}"
+        if result.get("due"):
+            response += f"\n- Due Date: {result["due"]}"
+        if result.get("notes"):
+            response += f"\n- Notes: {result["notes"]}"
+        if result.get("completed"):
+            response += f"\n- Completed: {result["completed"]}"
 
         logger.info(f"Updated task {task_id} for {user_google_email}")
         return response
 
     except HttpError as error:
-        message = f"API error: {error}. You might need to re-authenticate. LLM: Try 'start_google_auth' with the user's email ({user_google_email}) and service_name='Google Tasks'."
+        message = f"API error: {error}. You might need to re-authenticate. LLM: Try "start_google_auth" with the user"s email ({user_google_email}) and service_name="Google Tasks"."
         logger.error(message, exc_info=True)
         raise Exception(message)
     except Exception as e:
@@ -665,14 +665,14 @@ async def delete_task(
     Delete a task from a task list.
 
     Args:
-        user_google_email (str): The user's Google email address. Required.
+        user_google_email (str): The user"s Google email address. Required.
         task_list_id (str): The ID of the task list containing the task.
         task_id (str): The ID of the task to delete.
 
     Returns:
         str: Confirmation message.
     """
-    logger.info(f"[delete_task] Invoked. Email: '{user_google_email}', Task List ID: {task_list_id}, Task ID: {task_id}")
+    logger.info(f"[delete_task] Invoked. Email: "{user_google_email}", Task List ID: {task_list_id}, Task ID: {task_id}")
 
     try:
         await asyncio.to_thread(
@@ -685,7 +685,7 @@ async def delete_task(
         return response
 
     except HttpError as error:
-        message = f"API error: {error}. You might need to re-authenticate. LLM: Try 'start_google_auth' with the user's email ({user_google_email}) and service_name='Google Tasks'."
+        message = f"API error: {error}. You might need to re-authenticate. LLM: Try "start_google_auth" with the user"s email ({user_google_email}) and service_name="Google Tasks"."
         logger.error(message, exc_info=True)
         raise Exception(message)
     except Exception as e:
@@ -710,7 +710,7 @@ async def move_task(
     Move a task to a different position or parent within the same list, or to a different list.
 
     Args:
-        user_google_email (str): The user's Google email address. Required.
+        user_google_email (str): The user"s Google email address. Required.
         task_list_id (str): The ID of the current task list containing the task.
         task_id (str): The ID of the task to move.
         parent (Optional[str]): New parent task ID (for making it a subtask).
@@ -720,7 +720,7 @@ async def move_task(
     Returns:
         str: Confirmation message with updated task details.
     """
-    logger.info(f"[move_task] Invoked. Email: '{user_google_email}', Task List ID: {task_list_id}, Task ID: {task_id}")
+    logger.info(f"[move_task] Invoked. Email: "{user_google_email}", Task List ID: {task_list_id}, Task ID: {task_id}")
 
     try:
         params = {
@@ -739,15 +739,15 @@ async def move_task(
         )
 
         response = f"""Task Moved for {user_google_email}:
-- Title: {result['title']}
-- ID: {result['id']}
-- Status: {result.get('status', 'N/A')}
-- Updated: {result.get('updated', 'N/A')}"""
+- Title: {result["title"]}
+- ID: {result["id"]}
+- Status: {result.get("status", "N/A")}
+- Updated: {result.get("updated", "N/A")}"""
 
-        if result.get('parent'):
-            response += f"\n- Parent Task ID: {result['parent']}"
-        if result.get('position'):
-            response += f"\n- Position: {result['position']}"
+        if result.get("parent"):
+            response += f"\n- Parent Task ID: {result["parent"]}"
+        if result.get("position"):
+            response += f"\n- Position: {result["position"]}"
 
         move_details = []
         if destination_task_list:
@@ -758,13 +758,13 @@ async def move_task(
             move_details.append(f"positioned after {previous}")
 
         if move_details:
-            response += f"\n- Move Details: {', '.join(move_details)}"
+            response += f"\n- Move Details: {", ".join(move_details)}"
 
         logger.info(f"Moved task {task_id} for {user_google_email}")
         return response
 
     except HttpError as error:
-        message = f"API error: {error}. You might need to re-authenticate. LLM: Try 'start_google_auth' with the user's email ({user_google_email}) and service_name='Google Tasks'."
+        message = f"API error: {error}. You might need to re-authenticate. LLM: Try "start_google_auth" with the user"s email ({user_google_email}) and service_name="Google Tasks"."
         logger.error(message, exc_info=True)
         raise Exception(message)
     except Exception as e:
@@ -785,26 +785,26 @@ async def clear_completed_tasks(
     Clear all completed tasks from a task list. The tasks will be marked as hidden.
 
     Args:
-        user_google_email (str): The user's Google email address. Required.
+        user_google_email (str): The user"s Google email address. Required.
         task_list_id (str): The ID of the task list to clear completed tasks from.
 
     Returns:
         str: Confirmation message.
     """
-    logger.info(f"[clear_completed_tasks] Invoked. Email: '{user_google_email}', Task List ID: {task_list_id}")
+    logger.info(f"[clear_completed_tasks] Invoked. Email: "{user_google_email}", Task List ID: {task_list_id}")
 
     try:
         await asyncio.to_thread(
             service.tasks().clear(tasklist=task_list_id).execute
         )
 
-        response = f"All completed tasks have been cleared from task list {task_list_id} for {user_google_email}. The tasks are now hidden and won't appear in default task list views."
+        response = f"All completed tasks have been cleared from task list {task_list_id} for {user_google_email}. The tasks are now hidden and won"t appear in default task list views."
 
         logger.info(f"Cleared completed tasks from list {task_list_id} for {user_google_email}")
         return response
 
     except HttpError as error:
-        message = f"API error: {error}. You might need to re-authenticate. LLM: Try 'start_google_auth' with the user's email ({user_google_email}) and service_name='Google Tasks'."
+        message = f"API error: {error}. You might need to re-authenticate. LLM: Try "start_google_auth" with the user"s email ({user_google_email}) and service_name="Google Tasks"."
         logger.error(message, exc_info=True)
         raise Exception(message)
     except Exception as e:

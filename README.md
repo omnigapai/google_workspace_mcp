@@ -41,9 +41,9 @@
 <details>
 <summary>◆ <b>But why?</b></summary>
 
-**This README was written with AI assistance, and here's why that matters**
+**This README was written with AI assistance, and here"s why that matters**
 >
-> As a solo dev building open source tools, comprehensive documentation often wouldn't happen without AI help. Using agentic dev tools like **Roo** & **Claude Code** that understand the entire codebase, AI doesn't just regurgitate generic content - it extracts real implementation details and creates accurate, specific documentation.
+> As a solo dev building open source tools, comprehensive documentation often wouldn"t happen without AI help. Using agentic dev tools like **Roo** & **Claude Code** that understand the entire codebase, AI doesn"t just regurgitate generic content - it extracts real implementation details and creates accurate, specific documentation.
 >
 > In this case, Sonnet 4 took a pass & a human (me) verified them 8/16/25.
 </details>
@@ -273,7 +273,7 @@ Forms, Tasks, Chat, Search
 
 <details>
   <summary>⊥ <b>Quick API Enable Links</b> <sub><sup>← One-click enable each Google API</sup></sub></summary>
-  You can enable each one by clicking the links below (make sure you're logged into the Google Cloud Console and have the correct project selected):
+  You can enable each one by clicking the links below (make sure you"re logged into the Google Cloud Console and have the correct project selected):
 
 * [Enable Google Calendar API](https://console.cloud.google.com/flows/enableapi?apiid=calendar-json.googleapis.com)
 * [Enable Google Drive API](https://console.cloud.google.com/flows/enableapi?apiid=drive.googleapis.com)
@@ -929,9 +929,9 @@ If `MCP_ENABLE_OAUTH21` is not set to `true`, the server will use legacy authent
 
 This implementation solves two critical challenges when using Google OAuth in browser environments:
 
-1.  **Dynamic Client Registration**: Google doesn't support OAuth 2.1 dynamic client registration. Our server provides a clever proxy that accepts any client registration request and returns the pre-configured Google OAuth credentials, allowing standards-compliant clients to work seamlessly.
+1.  **Dynamic Client Registration**: Google doesn"t support OAuth 2.1 dynamic client registration. Our server provides a clever proxy that accepts any client registration request and returns the pre-configured Google OAuth credentials, allowing standards-compliant clients to work seamlessly.
 
-2.  **CORS Issues**: Google's OAuth endpoints don't include CORS headers, blocking browser-based clients. We implement intelligent proxy endpoints that:
+2.  **CORS Issues**: Google"s OAuth endpoints don"t include CORS headers, blocking browser-based clients. We implement intelligent proxy endpoints that:
    - Proxy authorization server discovery requests through `/auth/discovery/authorization-server/{server}`
    - Proxy token exchange requests through `/oauth2/token`
    - Add proper CORS headers to all responses
@@ -995,7 +995,7 @@ This mode is ideal for:
 
 #### Reverse Proxy Setup
 
-If you're running the MCP server behind a reverse proxy (nginx, Apache, Cloudflare, etc.), you have two configuration options:
+If you"re running the MCP server behind a reverse proxy (nginx, Apache, Cloudflare, etc.), you have two configuration options:
 
 **Problem**: When behind a reverse proxy, the server constructs OAuth URLs using internal ports (e.g., `http://localhost:8000`) but external clients need the public URL (e.g., `https://your-domain.com`).
 
@@ -1018,7 +1018,7 @@ You also have options for:
 **Important**:
 - Use `WORKSPACE_EXTERNAL_URL` when all OAuth endpoints should use the external URL (recommended for reverse proxy setups)
 - Use `GOOGLE_OAUTH_REDIRECT_URI` when you only need to override the callback URL
-- The redirect URI must exactly match what's configured in your Google Cloud Console
+- The redirect URI must exactly match what"s configured in your Google Cloud Console
 - Your reverse proxy must forward OAuth-related requests (`/oauth2callback`, `/oauth2/*`, `/.well-known/*`) to the MCP server
 
 <details>
@@ -1107,7 +1107,7 @@ When calling a tool:
 1. Server returns authorization URL
 2. Open URL in browser and authorize
 3. Google provides an authorization code
-4. Paste the code when prompted (or it's handled automatically)
+4. Paste the code when prompted (or it"s handled automatically)
 5. Server completes authentication and retries your request
 
 ---
@@ -1156,7 +1156,7 @@ credentials with support for multiple storage backends:
 - **Local File Storage**: `LocalDirectoryCredentialStore` implementation stores credentials as JSON files
 - **Configurable Storage**: Environment variable `GOOGLE_MCP_CREDENTIALS_DIR` sets storage location
 - **Multi-User Support**: Store and manage credentials for multiple Google accounts
-- **Automatic Directory Creation**: Storage directory is created automatically if it doesn't exist
+- **Automatic Directory Creation**: Storage directory is created automatically if it doesn"t exist
 
 **Configuration:**
 ```bash
