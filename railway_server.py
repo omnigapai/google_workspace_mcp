@@ -93,6 +93,56 @@ class Handler(BaseHTTPRequestHandler):
                 "coach_id": coach_id,
                 "message": f"Google OAuth successfully disconnected for coach {coach_id}"
             })
+        elif self.path == '/oauth/exchange':
+            # Handle OAuth token exchange
+            try:
+                # Read request body
+                content_length = int(self.headers.get('Content-Length', 0))
+                if content_length:
+                    body = self.rfile.read(content_length).decode('utf-8')
+                    data = json.loads(body)
+                else:
+                    data = {}
+                
+                code = data.get('code')
+                coach_id = data.get('coachId')
+                coach_email = data.get('coachEmail')
+                
+                if not code or not coach_id:
+                    self.send_json_response({
+                        "success": False,
+                        "error": "Missing authorization code or coachId"
+                    }, status_code=400)
+                    return
+                
+                # TODO: Implement actual token exchange with Google OAuth
+                # For now, simulate successful token exchange
+                print(f"🔄 OAuth token exchange for coach {coach_id} ({coach_email})")
+                print(f"📝 Authorization code received: {code[:20]}...")
+                
+                # Simulate token exchange (in real implementation, this would call Google's token endpoint)
+                self.send_json_response({
+                    "success": True,
+                    "coach_id": coach_id,
+                    "coach_email": coach_email,
+                    "access_token": "simulated_access_token",
+                    "refresh_token": "simulated_refresh_token",
+                    "expires_in": 3600,
+                    "token_type": "Bearer",
+                    "scope": "https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/contacts",
+                    "message": "OAuth token exchange successful"
+                })
+                
+            except json.JSONDecodeError:
+                self.send_json_response({
+                    "success": False,
+                    "error": "Invalid JSON in request body"
+                }, status_code=400)
+            except Exception as e:
+                self.send_json_response({
+                    "success": False,
+                    "error": f"Token exchange failed: {str(e)}"
+                }, status_code=500)
         else:
             self.send_response(404)
             self.send_header('Content-type', 'application/json')
