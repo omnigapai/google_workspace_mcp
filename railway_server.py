@@ -13,7 +13,7 @@ import re
 from datetime import datetime, timedelta
 
 # Supabase configuration from environment
-SUPABASE_URL = os.environ.get('SUPABASE_URL', 'https://rdkrcqwzkdtzqijxtdjw.supabase.co')
+SUPABASE_URL = os.environ.get('SUPABASE_URL', 'https://galwuihzfwnitmmxolhd.supabase.co')
 SUPABASE_SERVICE_KEY = os.environ.get('SUPABASE_SERVICE_ROLE_KEY', '')
 
 class TokenManager:
