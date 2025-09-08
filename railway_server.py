@@ -34,58 +34,25 @@ class TokenManager:
                 'updated_at': datetime.utcnow().isoformat() + 'Z'
             }
             
-            # Make upsert request to Supabase
+            # Make upsert request to Supabase with proper syntax
             url = f"{SUPABASE_URL}/rest/v1/google_oauth_tokens"
             headers = {
                 'apikey': SUPABASE_SERVICE_KEY,
                 'Authorization': f'Bearer {SUPABASE_SERVICE_KEY}',
                 'Content-Type': 'application/json',
-                'Prefer': 'resolution=merge-duplicates'
+                'Prefer': 'resolution=merge-duplicates'  # This enables upsert
             }
             
-            # Try to update existing token or insert new one
-            upsert_url = f"{url}?coach_id=eq.{coach_id}"
+            # Simple POST with merge-duplicates will handle both insert and update
+            req = urllib.request.Request(
+                url,
+                data=json.dumps(token_data).encode('utf-8'),
+                headers=headers,
+                method='POST'
+            )
             
-            # First, check if token exists
-            check_req = urllib.request.Request(upsert_url, headers={
-                'apikey': SUPABASE_SERVICE_KEY,
-                'Authorization': f'Bearer {SUPABASE_SERVICE_KEY}'
-            })
-            
-            try:
-                with urllib.request.urlopen(check_req) as response:
-                    existing = json.loads(response.read().decode())
-                    
-                if existing and len(existing) > 0:
-                    # Update existing token
-                    update_req = urllib.request.Request(
-                        upsert_url,
-                        data=json.dumps(token_data).encode('utf-8'),
-                        headers=headers,
-                        method='PATCH'
-                    )
-                    urllib.request.urlopen(update_req)
-                    print(f"✅ Updated token for coach {coach_id}")
-                else:
-                    # Insert new token
-                    insert_req = urllib.request.Request(
-                        url,
-                        data=json.dumps(token_data).encode('utf-8'),
-                        headers=headers
-                    )
-                    urllib.request.urlopen(insert_req)
-                    print(f"✅ Saved new token for coach {coach_id}")
-                    
-            except Exception as e:
-                # Fallback to direct insert if check fails
-                insert_req = urllib.request.Request(
-                    url,
-                    data=json.dumps(token_data).encode('utf-8'),
-                    headers=headers
-                )
-                urllib.request.urlopen(insert_req)
-                print(f"✅ Saved token for coach {coach_id} (fallback)")
-                
+            response = urllib.request.urlopen(req)
+            print(f"✅ Saved/updated token for coach {coach_id} in Supabase")
             return True
             
         except Exception as e:
